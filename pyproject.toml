@@ -1,0 +1,43 @@
+[project]
+name = "instrumenthub"
+version = "0.1.0"
+description = "Platform for acquisition, processing, storage and analysis of instrumentation data."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi",
+    "pydantic-settings",
+    "uvicorn[standard]",
+]
+
+[dependency-groups]
+dev = [
+    "httpx",
+    "mypy",
+    "pre-commit",
+    "pytest",
+    "pytest-asyncio",
+    "ruff",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "I",
+    "B",
+    "UP",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = []
