@@ -94,6 +94,32 @@ http://127.0.0.1:8000
 Interactive API documentation:
 http://127.0.0.1:8000/docs
 
+## Running with Docker
+
+Build the Docker image:
+docker compose build
+
+Start the application:
+docker compose up -d
+
+Check the running containers:
+docker compose ps
+
+The API will be available at:
+http://localhost:8000
+
+Health check:
+http://localhost:8000/api/v1/health
+
+Interactive API documentation:
+http://localhost:8000/docs
+
+View application logs:
+docker compose logs -f api
+
+Stop the application:
+docker compose down
+
 ## API
 
 Current API version:

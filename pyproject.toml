@@ -6,7 +6,11 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "fastapi",
+    "numpy",
+    "pandas",
     "pydantic-settings",
+    "pyarrow",
+    "scipy",
     "uvicorn[standard]",
 ]
 
