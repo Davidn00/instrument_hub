@@ -44,4 +44,6 @@ uvicorn           0.53.0
 virtualenv        21.7.11
 watchfiles        1.2.0
 websockets        17.1
-uv 0.12.15
+uv                0.12.15
+numpy             2.5.3
+pandas            3.0.6
