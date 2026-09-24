@@ -2,6 +2,7 @@ from datetime import UTC
 
 from app.devices.generators import generate_emg
 from app.devices.simulated import SimulatedDevice
+from app.models.measurement import Measurement
 from app.models.signal import Signal
 
 
@@ -51,7 +52,7 @@ class SimulatedEMGDevice(SimulatedDevice):
             },
         )
 
-    async def generate_measurement(self):
+    async def generate_measurement(self) -> Measurement:
         from datetime import datetime
 
         from app.models.measurement import Measurement

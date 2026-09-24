@@ -2,6 +2,7 @@ from datetime import UTC
 
 from app.devices.generators import generate_ecg
 from app.devices.simulated import SimulatedDevice
+from app.models.measurement import Measurement
 from app.models.signal import Signal
 
 
@@ -51,15 +52,16 @@ class SimulatedECGDevice(SimulatedDevice):
             },
         )
 
-    async def generate_measurement(self):
+    async def generate_measurement(self) -> Measurement:
         signal = self.acquire(duration=1.0 / self.sampling_rate)
 
         return await self._signal_to_measurement(signal)
 
-    async def _signal_to_measurement(self, signal: Signal):
+    async def _signal_to_measurement(
+        self,
+        signal: Signal,
+    ) -> Measurement:
         from datetime import datetime
-
-        from app.models.measurement import Measurement
 
         return Measurement(
             timestamp=datetime.now(UTC),
