@@ -1,4 +1,4 @@
-from datetime import UTC
+from datetime import UTC, datetime
 
 from app.devices.generators import generate_emg
 from app.devices.simulated import SimulatedDevice
@@ -53,10 +53,6 @@ class SimulatedEMGDevice(SimulatedDevice):
         )
 
     async def generate_measurement(self) -> Measurement:
-        from datetime import datetime
-
-        from app.models.measurement import Measurement
-
         signal = self.acquire(duration=1.0 / self.sampling_rate)
 
         return Measurement(
@@ -65,5 +61,5 @@ class SimulatedEMGDevice(SimulatedDevice):
             unit=signal.unit,
             sensor_id=f"{self.device_id}-channel-1",
             device_id=self.device_id,
-            measurement_type="emg",
+            measurement_type="ecg",
         )
