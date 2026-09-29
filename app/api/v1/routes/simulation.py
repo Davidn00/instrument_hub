@@ -81,10 +81,12 @@ async def read_device_measurement(
 
     return DeviceMeasurementResponse(
         timestamp=measurement.timestamp.isoformat(),
+        device_id=measurement.device_id,
+        channel=measurement.channel,
         value=measurement.value,
         unit=measurement.unit,
+        quality=measurement.quality,
         sensor_id=measurement.sensor_id,
-        device_id=measurement.device_id,
         measurement_type=(measurement.measurement_type),
         metadata=measurement.metadata,
     )

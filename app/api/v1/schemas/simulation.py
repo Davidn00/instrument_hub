@@ -199,13 +199,17 @@ class DeviceMeasurementRequest(BaseModel):
 class DeviceMeasurementResponse(BaseModel):
     timestamp: str
 
+    device_id: str
+
+    channel: str
+
     value: float
 
     unit: str
 
-    sensor_id: str
+    quality: str
 
-    device_id: str
+    sensor_id: str
 
     measurement_type: str
 

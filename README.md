@@ -14,6 +14,8 @@ The system is designed to support:
 * Signal processing.
 * Data storage.
 * Statistical analysis.
+* Spectral analysis.
+* Anomaly detection.
 * Real-time monitoring.
 * REST API access.
 * Future data visualization.
@@ -22,6 +24,7 @@ The system is designed to support:
 
 The project follows a modular architecture:
 
+```text
 API
  │
  ▼
@@ -34,14 +37,21 @@ Services
  ├── Storage
  │
  └── Devices
+```
 
 The architecture intentionally separates HTTP/API concerns from acquisition, processing, device communication and persistence.
+
+Signal processing is implemented independently from FastAPI so that processing components can be reused by acquisition services, background workers and future real-time pipelines.
 
 ## Technology Stack
 
 * Python 3.12
 * FastAPI
 * Pydantic
+* NumPy
+* SciPy
+* Pandas
+* PyArrow
 * uv
 * Pytest
 * Ruff
@@ -51,6 +61,7 @@ The architecture intentionally separates HTTP/API concerns from acquisition, pro
 
 ## Project Structure
 
+```text
 instrumenthub/
 │
 ├── app/
@@ -58,12 +69,21 @@ instrumenthub/
 │   ├── core/
 │   ├── acquisition/
 │   ├── processing/
+│   │   ├── statistics.py
+│   │   ├── filters.py
+│   │   ├── spectral.py
+│   │   └── anomalies.py
 │   ├── storage/
 │   ├── devices/
 │   ├── services/
 │   └── models/
 │
 ├── tests/
+│   ├── acquisition/
+│   ├── devices/
+│   ├── processing/
+│   └── ...
+│
 ├── docker/
 ├── scripts/
 ├── docs/
@@ -72,139 +92,354 @@ instrumenthub/
 ├── Dockerfile
 ├── docker-compose.yml
 └── README.md
+```
 
 ## Running the Application
 
 Create and activate the virtual environment:
 
+```bash
 uv venv
 source .venv/Scripts/activate
+```
 
 Install dependencies:
+
+```bash
 uv sync
+```
 
 Run the API:
+
+```bash
 uv run uvicorn app.main:app --reload
+```
 
 The API will be available at:
+
+```text
 http://127.0.0.1:8000
+```
 
 Interactive API documentation:
+
+```text
 http://127.0.0.1:8000/docs
+```
 
 ## Running with Docker
 
 Build the Docker image:
+
+```bash
 docker compose build
+```
 
 Start the application:
+
+```bash
 docker compose up -d
+```
 
 Check the running containers:
+
+```bash
 docker compose ps
+```
 
 The API will be available at:
+
+```text
 http://localhost:8000
+```
 
 Health check:
+
+```text
 http://localhost:8000/api/v1/health
+```
 
 Interactive API documentation:
+
+```text
 http://localhost:8000/docs
+```
 
 View application logs:
+
+```bash
 docker compose logs -f api
+```
 
 Stop the application:
+
+```bash
 docker compose down
+```
 
 ## API
 
 Current API version:
+
+```text
 /api/v1
+```
 
 Health check:
-GET /api/v1/health`
+
+```text
+GET /api/v1/health
+```
+
+## Processing
+
+Stage 4 introduces the signal processing pipeline.
+
+The processing layer operates independently from FastAPI and provides reusable numerical processing components.
+
+### Measurement
+
+Measurements use a standard domain representation:
+
+```text
+Measurement
+├── timestamp
+├── device_id
+├── channel
+├── value
+├── unit
+├── quality
+└── metadata
+```
+
+The model maintains backward compatibility with the `sensor_id` and `measurement_type` fields used by previous stages.
+
+### NumPy processing
+
+The processing layer provides:
+
+* Z-score normalization.
+* Min-max normalization.
+* Mean.
+* Standard deviation.
+* RMS.
+* Minimum.
+* Maximum.
+* Descriptive statistics.
+* Sliding windows.
+
+### Digital filters
+
+SciPy-based filters include:
+
+* Moving average.
+* Butterworth filter.
+* Low-pass filter.
+* High-pass filter.
+* Band-pass filter.
+* Notch filter.
+
+The Butterworth implementation uses zero-phase filtering to avoid introducing phase distortion into offline signal analysis.
+
+### Spectral analysis
+
+The spectral processing layer provides:
+
+* FFT.
+* Single-sided amplitude spectrum.
+* Dominant frequency detection.
+* Power spectral density using Welch's method.
+* Harmonic detection.
+
+The processing flow is:
+
+```text
+Time Domain
+     │
+     ▼
+    FFT
+     │
+     ▼
+Frequency Domain
+     │
+     ├── Dominant frequency
+     ├── Spectrum
+     ├── PSD
+     └── Harmonics
+```
+
+### Anomaly detection
+
+The first anomaly detection layer provides:
+
+* Absolute threshold detection.
+* Z-score detection.
+* IQR-based detection.
+* Rolling Z-score detection.
+
+The rolling detector is designed to support future streaming and real-time acquisition scenarios.
+
+### Processing architecture
+
+The current architecture is intentionally modular:
+
+```text
+Acquisition
+     │
+     ▼
+Measurement
+     │
+     ▼
+Signal / NumPy array
+     │
+     ├───────────────┐
+     ▼               ▼
+Statistics        Filters
+     │               │
+     └───────┬───────┘
+             ▼
+       Spectral Analysis
+             │
+             ▼
+     Anomaly Detection
+```
+
+A higher-level processing service and real-time processing pipeline can be introduced in a later stage without coupling the numerical processing functions to FastAPI.
 
 ## Testing
-Run the test suite:
+
+Run the complete test suite:
+
+```bash
 uv run pytest
+```
+
+Run only processing tests:
+
+```bash
+uv run pytest tests/processing -q
+```
+
+Run Ruff:
+
+```bash
+uv run ruff check .
+```
+
+Run MyPy:
+
+```bash
+uv run mypy app
+```
 
 ## Code Quality
 
-Run Ruff:
-uv run ruff check .
+The project uses:
 
-Run MyPy:
-uv run mypy app
+* Ruff for linting.
+* MyPy for static type checking.
+* Pytest for automated testing.
+* pre-commit for local quality checks.
+* GitHub Actions for continuous integration.
 
 ## Project Status
 
 Current development stage:
 
-**Stage 1 — Architecture and Core**
+**Stage 4 — Signal Processing Pipeline**
 
 ### Stage 1 — Architecture and Core
 
-- [x] Initial architecture
-- [x] Python environment
-- [x] FastAPI application
-- [x] Configuration
-- [x] API v1
-- [x] Health check
-- [x] Docker
-- [x] CI
-- [x] Pre-commit
+* [x] Initial architecture
+* [x] Python environment
+* [x] FastAPI application
+* [x] Configuration
+* [x] API v1
+* [x] Health check
+* [x] Docker
+* [x] CI
+* [x] Pre-commit
 
 ### Stage 2 — Instrument Simulation
 
-- [x] Device abstraction
-- [x] Simulated device framework
-- [x] Temperature simulation
-- [x] Pressure simulation
-- [x] Sinusoidal signal generation
-- [x] Noise generation
-- [x] Synthetic ECG generation
-- [x] Synthetic EMG generation
-- [x] FBG spectrum generation
-- [x] Signal generation service
-- [x] CSV dataset loading
-- [x] JSON dataset loading
-- [x] Parquet dataset loading
-- [x] Dataset playback
-- [x] Real-time dataset playback
-- [x] Configurable playback speed
-- [x] Simulation REST API
-- [x] Unit tests
-- [x] Integration tests
+* [x] Device abstraction
+* [x] Simulated device framework
+* [x] Temperature simulation
+* [x] Pressure simulation
+* [x] Sinusoidal signal generation
+* [x] Noise generation
+* [x] Synthetic ECG generation
+* [x] Synthetic EMG generation
+* [x] FBG spectrum generation
+* [x] Signal generation service
+* [x] CSV dataset loading
+* [x] JSON dataset loading
+* [x] Parquet dataset loading
+* [x] Dataset playback
+* [x] Real-time dataset playback
+* [x] Configurable playback speed
+* [x] Simulation REST API
+* [x] Unit tests
+* [x] Integration tests
 
 ### Stage 3 — Acquisition Pipeline
 
-- [x] Stable `Instrument` abstraction
-- [x] Backward compatibility with Stage 2 `InstrumentDevice`
-- [x] `SimulatedInstrument` abstraction
-- [x] Serial instrument with PySerial
-- [x] COM/TTY configuration
-- [x] ASCII and CSV-like protocol parsing
-- [x] Binary frame decoding
-- [x] Measurement parser pipeline
-- [x] Acquisition manager
-- [x] Async acquisition loop
-- [x] Bounded buffering and overflow policy
-- [x] Reconnection and error metrics
-- [x] Throughput and timestamp metrics
-- [x] TCP transport foundation
-- [x] Unit and integration tests
+* [x] Stable `Instrument` abstraction
+* [x] Backward compatibility with Stage 2 `InstrumentDevice`
+* [x] `SimulatedInstrument` abstraction
+* [x] Serial instrument with PySerial
+* [x] COM/TTY configuration
+* [x] ASCII and CSV-like protocol parsing
+* [x] Binary frame decoding
+* [x] Measurement parser pipeline
+* [x] Acquisition manager
+* [x] Async acquisition loop
+* [x] Bounded buffering and overflow policy
+* [x] Reconnection and error metrics
+* [x] Throughput and timestamp metrics
+* [x] TCP transport foundation
+* [x] Unit and integration tests
+
+### Stage 4 — Signal Processing Pipeline
+
+* [x] Standard `Measurement` model
+* [x] Backward-compatible measurement fields
+* [x] NumPy signal validation
+* [x] Z-score normalization
+* [x] Min-max normalization
+* [x] Descriptive statistics
+* [x] RMS calculation
+* [x] Minimum and maximum
+* [x] Sliding windows
+* [x] Moving-average filter
+* [x] Butterworth filtering
+* [x] Low-pass filter
+* [x] High-pass filter
+* [x] Band-pass filter
+* [x] Notch filter
+* [x] FFT
+* [x] Dominant-frequency detection
+* [x] Power spectral density
+* [x] Harmonic detection
+* [x] Threshold anomaly detection
+* [x] Z-score anomaly detection
+* [x] IQR anomaly detection
+* [x] Rolling Z-score anomaly detection
+* [x] Processing unit tests
 
 ### Next Stage
 
-**Stage 4 — Processing Pipeline**
+**Stage 5 — Processing Services and Data Flow**
 
 Planned components:
 
-- Digital filtering
-- FFT and spectral analysis
-- Feature extraction
-- Anomaly detection
-- Processing pipelines
-- Real-time processing of acquired measurements
+* Processing service abstraction
+* Processing pipeline composition
+* Integration with acquisition
+* Real-time signal processing
+* Processed measurement persistence
+* Processing configuration
+* Pipeline execution metrics
+* Advanced anomaly detection
+* Future scikit-learn based methods
+* Visualization-ready processing results
