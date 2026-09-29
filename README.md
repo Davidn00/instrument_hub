@@ -178,18 +178,33 @@ Current development stage:
 - [x] Unit tests
 - [x] Integration tests
 
+### Stage 3 — Acquisition Pipeline
+
+- [x] Stable `Instrument` abstraction
+- [x] Backward compatibility with Stage 2 `InstrumentDevice`
+- [x] `SimulatedInstrument` abstraction
+- [x] Serial instrument with PySerial
+- [x] COM/TTY configuration
+- [x] ASCII and CSV-like protocol parsing
+- [x] Binary frame decoding
+- [x] Measurement parser pipeline
+- [x] Acquisition manager
+- [x] Async acquisition loop
+- [x] Bounded buffering and overflow policy
+- [x] Reconnection and error metrics
+- [x] Throughput and timestamp metrics
+- [x] TCP transport foundation
+- [x] Unit and integration tests
+
 ### Next Stage
 
-**Stage 3 — Acquisition Pipeline**
+**Stage 4 — Processing Pipeline**
 
 Planned components:
 
-- Acquisition service
-- Async acquisition loops
-- Device lifecycle management
-- MQTT integration
-- WebSocket streaming
-- Acquisition buffering
-- PostgreSQL persistence
-- Signal processing pipeline
-- Real-time data flow
+- Digital filtering
+- FFT and spectral analysis
+- Feature extraction
+- Anomaly detection
+- Processing pipelines
+- Real-time processing of acquired measurements

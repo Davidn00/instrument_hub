@@ -9,6 +9,7 @@ dependencies = [
     "numpy",
     "pandas",
     "pydantic-settings",
+    "pyserial>=3.5",
     "pyarrow",
     "scipy",
     "uvicorn[standard]",
@@ -23,6 +24,7 @@ dev = [
     "pytest",
     "pytest-asyncio",
     "ruff",
+    "types-pyserial>=3.5.0.20260712",
 ]
 
 [tool.ruff]

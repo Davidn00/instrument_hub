@@ -1,26 +1,11 @@
 from abc import abstractmethod
-from typing import Any
 
-from app.devices.base import InstrumentDevice
+from app.devices.base import Instrument
 from app.models.measurement import Measurement
 
 
-class SimulatedDevice(InstrumentDevice):
-    """
-    Base class for virtual instruments.
-    """
-
-    def __init__(
-        self,
-        device_id: str,
-        name: str,
-        metadata: dict[str, Any] | None = None,
-    ) -> None:
-        super().__init__(
-            device_id=device_id,
-            name=name,
-            metadata=metadata,
-        )
+class SimulatedInstrument(Instrument):
+    """Base class for virtual instruments."""
 
     async def connect(self) -> None:
         self._connected = True
@@ -36,6 +21,8 @@ class SimulatedDevice(InstrumentDevice):
 
     @abstractmethod
     async def generate_measurement(self) -> Measurement:
-        """
-        Generate a simulated measurement.
-        """
+        """Generate one simulated measurement."""
+
+
+# Backward-compatible Stage 2 name.
+SimulatedDevice = SimulatedInstrument

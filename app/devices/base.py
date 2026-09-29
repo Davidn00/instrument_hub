@@ -4,10 +4,8 @@ from typing import Any
 from app.models.measurement import Measurement
 
 
-class InstrumentDevice(ABC):
-    """
-    Abstract interface for every InstrumentHub device.
-    """
+class Instrument(ABC):
+    """Stable hardware-independent interface for every InstrumentHub instrument."""
 
     def __init__(
         self,
@@ -15,6 +13,11 @@ class InstrumentDevice(ABC):
         name: str,
         metadata: dict[str, Any] | None = None,
     ) -> None:
+        if not device_id:
+            raise ValueError("device_id cannot be empty")
+        if not name:
+            raise ValueError("name cannot be empty")
+
         self.device_id = device_id
         self.name = name
         self.metadata = metadata or {}
@@ -26,17 +29,17 @@ class InstrumentDevice(ABC):
 
     @abstractmethod
     async def connect(self) -> None:
-        """Connect the device."""
+        """Open the instrument connection."""
 
     @abstractmethod
     async def disconnect(self) -> None:
-        """Disconnect the device."""
+        """Close the instrument connection."""
 
     @abstractmethod
     async def read(self) -> Measurement:
-        """Read one measurement from the device."""
+        """Read one domain measurement."""
 
-    async def __aenter__(self) -> "InstrumentDevice":
+    async def __aenter__(self) -> "Instrument":
         await self.connect()
         return self
 
@@ -47,3 +50,7 @@ class InstrumentDevice(ABC):
         traceback: Any,
     ) -> None:
         await self.disconnect()
+
+
+# Backward-compatible name used by Stage 2.
+InstrumentDevice = Instrument
