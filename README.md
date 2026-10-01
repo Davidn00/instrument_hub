@@ -68,11 +68,9 @@ instrumenthub/
 │   ├── api/
 │   ├── core/
 │   ├── acquisition/
+│   │   ├── protocols/
+│   │   └── transports/
 │   ├── processing/
-│   │   ├── statistics.py
-│   │   ├── filters.py
-│   │   ├── spectral.py
-│   │   └── anomalies.py
 │   ├── storage/
 │   ├── devices/
 │   ├── services/
@@ -427,19 +425,19 @@ Current development stage:
 * [x] Rolling Z-score anomaly detection
 * [x] Processing unit tests
 
+### Stage 5 — IBSEN Optical Interrogator Integration
+
+* [x] IBSEN serial transport
+* [x] I-MON protocol implementation
+* [x] Device identification
+* [x] Pixel-count discovery
+* [x] Spectrum acquisition
+* [x] `Spectrum` domain model
+* [x] Pixel-to-wavelength calibration
+* [x] Fifth-degree calibration polynomial
+* [x] Hardware-independent IBSEN tests
+* [x] Stage 5 documentation
+
 ### Next Stage
 
-**Stage 5 — Processing Services and Data Flow**
-
-Planned components:
-
-* Processing service abstraction
-* Processing pipeline composition
-* Integration with acquisition
-* Real-time signal processing
-* Processed measurement persistence
-* Processing configuration
-* Pipeline execution metrics
-* Advanced anomaly detection
-* Future scikit-learn based methods
-* Visualization-ready processing results
+Future stages can connect the acquired spectra to persistent storage, processing pipelines, real-time visualization and continuous streaming.
