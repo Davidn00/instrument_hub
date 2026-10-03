@@ -344,7 +344,7 @@ The project uses:
 
 Current development stage:
 
-**Stage 4 — Signal Processing Pipeline**
+**Stage 6 — FBG Analysis and LabVIEW Validation**
 
 ### Stage 1 — Architecture and Core
 
@@ -438,6 +438,23 @@ Current development stage:
 * [x] Hardware-independent IBSEN tests
 * [x] Stage 5 documentation
 
-### Next Stage
+### Stage 6 — FBG Analysis
 
-Future stages can connect the acquired spectra to persistent storage, processing pipelines, real-time visualization and continuous streaming.
+* [x] Savitzky-Golay spectral noise reduction
+* [x] Bragg peak detection with `scipy.signal.find_peaks`
+* [x] Quadratic peak-position refinement
+* [x] Bragg wavelength (`λB`) extraction
+* [x] Temporal `λB` tracking
+* [x] `Δλ = λ(t) - λ0`
+* [x] FBG strain calibration
+* [x] FBG temperature calibration
+* [x] Explicit physical calibration equations
+* [x] Spectrum amplitude and RMS metrics
+* [x] Temporal tracking frequency estimation
+* [x] LabVIEW comparison module
+* [x] Absolute error
+* [x] Relative error
+* [x] RMSE
+* [x] Pearson correlation
+* [x] Stage 6 unit tests
+* [x] Stage 6 documentation
