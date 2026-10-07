@@ -11,6 +11,14 @@ class Settings(BaseSettings):
 
     api_v1_prefix: str = "/api/v1"
 
+    database_url: str = (
+        "postgresql+asyncpg://instrumenthub:instrumenthub@localhost:5432/instrumenthub"
+    )
+
+    database_echo: bool = False
+
+    websocket_max_connections: int = 100
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",

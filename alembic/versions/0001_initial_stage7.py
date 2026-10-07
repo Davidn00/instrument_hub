@@ -1,0 +1,535 @@
+"""Initial Stage 7 schema.
+
+Revision ID: 0001_initial_stage7
+Revises:
+Create Date: 2026-10-03
+"""
+
+import sqlalchemy as sa
+from sqlalchemy.dialects import postgresql
+
+from alembic import op
+
+revision = "0001_initial_stage7"
+down_revision = None
+branch_labels = None
+depends_on = None
+
+
+def upgrade() -> None:
+    op.execute("CREATE EXTENSION IF NOT EXISTS timescaledb")
+
+    op.create_table(
+        "devices",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "name",
+            sa.String(255),
+            nullable=False,
+        ),
+        sa.Column(
+            "device_type",
+            sa.String(100),
+            nullable=False,
+        ),
+        sa.Column(
+            "interface",
+            sa.String(100),
+            nullable=True,
+        ),
+        sa.Column(
+            "status",
+            sa.String(50),
+            nullable=False,
+            server_default="OFFLINE",
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "updated_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+    )
+
+    op.create_index(
+        "ix_devices_device_id",
+        "devices",
+        ["device_id"],
+        unique=True,
+    )
+
+    op.create_index(
+        "ix_devices_device_type",
+        "devices",
+        ["device_type"],
+    )
+
+    op.create_table(
+        "channels",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "name",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "unit",
+            sa.String(64),
+            nullable=False,
+        ),
+        sa.Column(
+            "description",
+            sa.Text,
+            nullable=True,
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.UniqueConstraint(
+            "device_id",
+            "name",
+            name="uq_channels_device_name",
+        ),
+    )
+
+    op.create_index(
+        "ix_channels_device_id",
+        "channels",
+        ["device_id"],
+    )
+
+    op.create_table(
+        "measurements",
+        sa.Column(
+            "timestamp",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "channel",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "value",
+            sa.Float,
+            nullable=False,
+        ),
+        sa.Column(
+            "unit",
+            sa.String(64),
+            nullable=False,
+        ),
+        sa.Column(
+            "quality",
+            sa.String(32),
+            nullable=False,
+            server_default="GOOD",
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.PrimaryKeyConstraint(
+            "timestamp",
+            "id",
+            name="pk_measurements",
+        ),
+    )
+
+    op.create_index(
+        "ix_measurements_device_id",
+        "measurements",
+        ["device_id"],
+    )
+
+    op.create_index(
+        "ix_measurements_channel",
+        "measurements",
+        ["channel"],
+    )
+
+    op.create_index(
+        "ix_measurements_device_timestamp",
+        "measurements",
+        ["device_id", "timestamp"],
+    )
+
+    op.create_index(
+        "ix_measurements_channel_timestamp",
+        "measurements",
+        ["channel", "timestamp"],
+    )
+
+    op.execute(
+        """
+        SELECT create_hypertable(
+            'measurements',
+            'timestamp',
+            if_not_exists => TRUE
+        )
+        """
+    )
+
+    op.create_table(
+        "spectra",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "timestamp",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "wavelength",
+            postgresql.ARRAY(sa.Float),
+            nullable=False,
+        ),
+        sa.Column(
+            "intensity",
+            postgresql.ARRAY(sa.Float),
+            nullable=False,
+        ),
+        sa.Column(
+            "wavelength_unit",
+            sa.String(32),
+            nullable=False,
+            server_default="nm",
+        ),
+        sa.Column(
+            "intensity_unit",
+            sa.String(32),
+            nullable=False,
+            server_default="counts",
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+    )
+
+    op.create_index(
+        "ix_spectra_timestamp",
+        "spectra",
+        ["timestamp"],
+    )
+
+    op.create_index(
+        "ix_spectra_device_id",
+        "spectra",
+        ["device_id"],
+    )
+
+    op.create_table(
+        "experiments",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "name",
+            sa.String(255),
+            nullable=False,
+        ),
+        sa.Column(
+            "description",
+            sa.Text,
+            nullable=True,
+        ),
+        sa.Column(
+            "status",
+            sa.String(50),
+            nullable=False,
+            server_default="CREATED",
+        ),
+        sa.Column(
+            "started_at",
+            sa.DateTime(timezone=True),
+            nullable=True,
+        ),
+        sa.Column(
+            "ended_at",
+            sa.DateTime(timezone=True),
+            nullable=True,
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+    )
+
+    op.create_table(
+        "calibrations",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "calibration_type",
+            sa.String(100),
+            nullable=False,
+        ),
+        sa.Column(
+            "coefficients",
+            postgresql.ARRAY(sa.Float),
+            nullable=False,
+        ),
+        sa.Column(
+            "parameters",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "valid_from",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "valid_until",
+            sa.DateTime(timezone=True),
+            nullable=True,
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+    )
+
+    op.create_index(
+        "ix_calibrations_device_id",
+        "calibrations",
+        ["device_id"],
+    )
+
+    op.create_table(
+        "processing_jobs",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "job_type",
+            sa.String(100),
+            nullable=False,
+        ),
+        sa.Column(
+            "status",
+            sa.String(50),
+            nullable=False,
+            server_default="PENDING",
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=True,
+        ),
+        sa.Column(
+            "parameters",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "input_reference",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "result",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+        sa.Column(
+            "error",
+            sa.Text,
+            nullable=True,
+        ),
+        sa.Column(
+            "created_at",
+            sa.DateTime(timezone=True),
+            nullable=False,
+            server_default=sa.func.now(),
+        ),
+        sa.Column(
+            "started_at",
+            sa.DateTime(timezone=True),
+            nullable=True,
+        ),
+        sa.Column(
+            "completed_at",
+            sa.DateTime(timezone=True),
+            nullable=True,
+        ),
+    )
+
+    op.create_index(
+        "ix_processing_jobs_job_type",
+        "processing_jobs",
+        ["job_type"],
+    )
+
+    op.create_index(
+        "ix_processing_jobs_device_id",
+        "processing_jobs",
+        ["device_id"],
+    )
+
+    op.create_table(
+        "alerts",
+        sa.Column(
+            "id",
+            postgresql.UUID(as_uuid=True),
+            primary_key=True,
+        ),
+        sa.Column(
+            "timestamp",
+            sa.DateTime(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "device_id",
+            sa.String(128),
+            nullable=False,
+        ),
+        sa.Column(
+            "channel",
+            sa.String(128),
+            nullable=True,
+        ),
+        sa.Column(
+            "severity",
+            sa.String(32),
+            nullable=False,
+        ),
+        sa.Column(
+            "message",
+            sa.Text,
+            nullable=False,
+        ),
+        sa.Column(
+            "value",
+            sa.Float,
+            nullable=True,
+        ),
+        sa.Column(
+            "acknowledged",
+            sa.Boolean,
+            nullable=False,
+            server_default="false",
+        ),
+        sa.Column(
+            "metadata",
+            postgresql.JSONB,
+            nullable=False,
+            server_default="{}",
+        ),
+    )
+
+    op.create_index(
+        "ix_alerts_timestamp",
+        "alerts",
+        ["timestamp"],
+    )
+
+    op.create_index(
+        "ix_alerts_device_id",
+        "alerts",
+        ["device_id"],
+    )
+
+
+def downgrade() -> None:
+    op.drop_table("alerts")
+    op.drop_table("processing_jobs")
+    op.drop_table("calibrations")
+    op.drop_table("experiments")
+    op.drop_table("spectra")
+
+    op.drop_table("measurements")
+
+    op.drop_table("channels")
+    op.drop_table("devices")
+
+    op.execute("DROP EXTENSION IF EXISTS timescaledb")

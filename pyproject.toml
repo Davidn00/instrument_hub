@@ -5,6 +5,8 @@ description = "Platform for acquisition, processing, storage and analysis of ins
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic",
+    "asyncpg",
     "fastapi",
     "numpy",
     "pandas",
@@ -12,6 +14,7 @@ dependencies = [
     "pyserial>=3.5",
     "pyarrow",
     "scipy",
+    "sqlalchemy[asyncio]",
     "uvicorn[standard]",
 ]
 

@@ -1,11 +1,60 @@
 services:
+  database:
+    image: timescale/timescaledb:2.30.2-pg17
+    container_name: instrumenthub-db
+
+    environment:
+      POSTGRES_DB: instrumenthub
+      POSTGRES_USER: instrumenthub
+      POSTGRES_PASSWORD: instrumenthub
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - instrumenthub-db-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U instrumenthub -d instrumenthub",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
   api:
     build:
       context: .
       dockerfile: Dockerfile
+
     container_name: instrumenthub-api
-    env_file:
-      - .env
+
+    environment:
+      APP_NAME: InstrumentHub
+      APP_VERSION: 0.1.0
+      ENVIRONMENT: development
+      DEBUG: "true"
+      API_V1_PREFIX: /api/v1
+
+      DATABASE_URL: postgresql+asyncpg://instrumenthub:instrumenthub@database:5432/instrumenthub
+
+      DATABASE_ECHO: "false"
+
+      WEBSOCKET_MAX_CONNECTIONS: "100"
+
     ports:
       - "8000:8000"
+
+    depends_on:
+      database:
+        condition: service_healthy
+
     restart: unless-stopped
+
+
+volumes:
+  instrumenthub-db-data:
