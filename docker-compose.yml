@@ -47,7 +47,7 @@ services:
       WEBSOCKET_MAX_CONNECTIONS: "100"
 
     ports:
-      - "8000:8000"
+      - "8001:8001"
 
     depends_on:
       database:
