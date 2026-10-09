@@ -45,6 +45,8 @@ Signal processing is implemented independently from FastAPI so that processing c
 
 ## Technology Stack
 
+## Technology Stack
+
 * Python 3.12
 * FastAPI
 * Pydantic
@@ -52,6 +54,12 @@ Signal processing is implemented independently from FastAPI so that processing c
 * SciPy
 * Pandas
 * PyArrow
+* PostgreSQL
+* TimescaleDB
+* SQLAlchemy 2
+* asyncpg
+* Alembic
+* WebSockets
 * uv
 * Pytest
 * Ruff
@@ -304,6 +312,46 @@ Statistics        Filters
 
 A higher-level processing service and real-time processing pipeline can be introduced in a later stage without coupling the numerical processing functions to FastAPI.
 
+## Storage
+
+Stage 7 introduces persistent storage using PostgreSQL and TimescaleDB.
+
+The persistence layer is intentionally separated from the domain models.
+
+```text
+Domain Models
+     │
+     ▼
+Storage Mappers
+     │
+     ▼
+SQLAlchemy ORM
+     │
+     ▼
+PostgreSQL
+     │
+     └── TimescaleDB
+
+## Real-Time Acquisition
+
+Stage 7 introduces real-time data delivery through WebSockets.
+
+The runtime pipeline is:
+
+```text
+Instrument
+    │
+    ▼
+AcquisitionManager
+    │
+    ├──────────────► PostgreSQL / TimescaleDB
+    │
+    └──────────────► WebSocketManager
+                           │
+                           ▼
+                        Browser
+
+
 ## Testing
 
 Run the complete test suite:
@@ -344,7 +392,7 @@ The project uses:
 
 Current development stage:
 
-**Stage 6 — FBG Analysis and LabVIEW Validation**
+**Stage 7 — Backend, Storage and Real-Time Acquisition**
 
 ### Stage 1 — Architecture and Core
 
@@ -458,3 +506,31 @@ Current development stage:
 * [x] Pearson correlation
 * [x] Stage 6 unit tests
 * [x] Stage 6 documentation
+
+### Stage 7 — Backend, Storage and Real-Time Acquisition
+
+* [x] PostgreSQL integration
+* [x] SQLAlchemy 2 asynchronous persistence
+* [x] Alembic migrations
+* [x] TimescaleDB integration
+* [x] `devices` persistence
+* [x] `channels` persistence
+* [x] `measurements` persistence
+* [x] `spectra` persistence
+* [x] `experiments` persistence
+* [x] `calibrations` persistence
+* [x] `processing_jobs` persistence
+* [x] `alerts` persistence
+* [x] TimescaleDB measurements hypertable
+* [x] Acquisition persistence service
+* [x] WebSocket connection manager
+* [x] Real-time measurement streaming
+* [x] Device REST API
+* [x] Acquisition REST API
+* [x] Measurement REST API
+* [x] Spectrum REST API
+* [x] Experiment REST API
+* [x] Database readiness endpoint
+* [x] Storage mapping tests
+* [x] WebSocket tests
+* [x] Stage 7 documentation

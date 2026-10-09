@@ -188,6 +188,9 @@ class AcquisitionManager:
 
                     self._put_buffered(measurement)
 
+                    # Give the event loop time to process other tasks.
+                    await asyncio.sleep(0.1)
+
                 except asyncio.CancelledError:
                     raise
 
