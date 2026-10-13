@@ -534,3 +534,101 @@ Current development stage:
 * [x] Storage mapping tests
 * [x] WebSocket tests
 * [x] Stage 7 documentation
+
+
+## Frontend
+
+Stage 8 introduces the InstrumentHub web dashboard as a separate
+React application.
+
+### Frontend technology stack
+
+- React
+- TypeScript
+- Vite
+- React Router
+- TanStack Query
+- Tailwind CSS
+- Plotly.js
+- WebSocket API
+
+### Frontend structure
+
+```text
+frontend/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── App.tsx
+│   ├── index.css
+│   └── main.tsx
+├── .env.example
+├── package.json
+├── package-lock.json
+├── tsconfig.json
+└── vite.config.ts
+```
+
+### Running the frontend
+
+From the repository root:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite development server uses:
+
+```text
+http://127.0.0.1:5173
+```
+
+Create a local `frontend/.env.local` file with the
+`VITE_API_BASE_URL` variable to configure the backend API URL.
+
+Do not store secrets or database credentials in frontend environment
+variables. Variables prefixed with `VITE_` are exposed to the browser.
+
+Build the frontend:
+
+```bash
+npm run build
+```
+
+
+### Stage 8 progress
+
+- [x] 29A — Initialize React, TypeScript and Vite.
+- [x] 29B — Professional layout, sidebar and navigation routes.
+- [ ] 29C — REST API integration and TypeScript data contracts.
+- [ ] 29D — Functional Devices and Experiments pages.
+- [ ] 30 — Live spectrum visualization.
+- [ ] 31 — Multichannel time-series visualization.
+- [ ] 32 — FFT dashboard.
+- [ ] 33 — FBG analysis, alerts and export.
+- [ ] 34 — Testing, security, documentation and deployment.
+
+#### Part 29B — Implemented
+
+The frontend includes:
+
+- Shared application layout.
+- Responsive sidebar navigation.
+- Dynamic page titles.
+- Dashboard overview and metric placeholders.
+- Dedicated routes for instrumentation and analysis modules.
+- Responsive styling with Tailwind CSS.
+- A not-found page for undefined routes.
+
+The dashboard is currently a presentation layer. Metrics and
+operational module data have not yet been connected to the backend.
+
+Run the frontend locally:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```

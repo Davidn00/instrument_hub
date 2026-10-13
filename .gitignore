@@ -48,3 +48,11 @@ data/
 ~$*
 .docx
 InstrumentHub_Documentacion.docx
+
+
+# Frontend: Node.js / Vite
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.*.local
+frontend/coverage/

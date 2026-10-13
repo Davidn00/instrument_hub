@@ -1,53 +1,206 @@
 
+import { Link, Route, Routes } from "react-router-dom";
+import {
+  Activity,
+  AlertTriangle,
+  BarChart3,
+  Cpu,
+  Download,
+  FlaskConical,
+  RadioTower,
+  Waves,
+} from "lucide-react";
+
+import AppLayout from "./components/AppLayout";
+import DashboardPage from "./pages/DashboardPage";
+import ModulePage from "./pages/ModulePage";
+
+
+function NotFoundPage() {
+  return (
+    <section className="rounded-xl border border-slate-800 bg-slate-900 p-8">
+      <p className="text-sm font-medium text-cyan-400">404</p>
+
+      <h2 className="mt-3 text-2xl font-bold text-white">
+        Page not found
+      </h2>
+
+      <p className="mt-2 text-sm text-slate-400">
+        The requested InstrumentHub page does not exist.
+      </p>
+
+      <Link
+        to="/"
+        className="mt-6 inline-flex rounded-lg bg-cyan-400 px-4 py-2 text-sm font-semibold text-slate-950 hover:bg-cyan-300"
+      >
+        Back to dashboard
+      </Link>
+    </section>
+  );
+}
+
 function App() {
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto max-w-7xl px-6 py-10">
-        <header className="mb-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.25em] text-cyan-400">
-            Instrumentation platform
-          </p>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<DashboardPage />} />
 
-          <h1 className="mt-3 text-4xl font-bold tracking-tight">
-            InstrumentHub
-          </h1>
+        <Route
+          path="devices"
+          element={
+            <ModulePage
+              title="Devices"
+              description="Review instrumentation devices and their operational configuration."
+              icon={Cpu}
+              stage="Part 29D"
+              features={[
+                "Device inventory and identification.",
+                "Device type and connection information.",
+                "Operational status and device details.",
+              ]}
+            />
+          }
+        />
 
-          <p className="mt-3 max-w-2xl text-slate-400">
-            Acquisition, monitoring and scientific analysis of instrument data.
-          </p>
-        </header>
+        <Route
+          path="live-acquisition"
+          element={
+            <ModulePage
+              title="Live Acquisition"
+              description="Monitor the acquisition workflow and prepare the real-time measurement workspace."
+              icon={RadioTower}
+              stage="Parts 29C and 31"
+              features={[
+                "Acquisition controls based on supported backend operations.",
+                "Live measurement stream through WebSocket.",
+                "Connection state, errors and reconnection handling.",
+              ]}
+            />
+          }
+        />
 
-        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <article className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">Platform</p>
-            <h2 className="mt-2 text-xl font-semibold">Dashboard</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Your instrumentation workspace.
-            </p>
-          </article>
+        <Route
+          path="spectrum"
+          element={
+            <ModulePage
+              title="Spectrum"
+              description="Explore wavelength and intensity data from supported optical instrumentation."
+              icon={Waves}
+              stage="Part 30"
+              features={[
+                "Intensity versus wavelength.",
+                "Interactive zoom and axis controls.",
+                "Live spectrum updates when available from the backend.",
+              ]}
+            />
+          }
+        />
 
-          <article className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">Acquisition</p>
-            <h2 className="mt-2 text-xl font-semibold">Devices</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Device management will be added next.
-            </p>
-          </article>
+        <Route
+          path="time-series"
+          element={
+            <ModulePage
+              title="Time Series"
+              description="Inspect measurement histories across instrument channels."
+              icon={Activity}
+              stage="Part 31"
+              features={[
+                "Value versus time.",
+                "Multiple channels and time-range selection.",
+                "Descriptive statistics and interactive Plotly charts.",
+              ]}
+            />
+          }
+        />
 
-          <article className="rounded-xl border border-slate-800 bg-slate-900 p-6">
-            <p className="text-sm text-slate-400">Visualization</p>
-            <h2 className="mt-2 text-xl font-semibold">Live data</h2>
-            <p className="mt-2 text-sm text-slate-400">
-              Real-time charts will be integrated in a later part.
-            </p>
-          </article>
-        </section>
+        <Route
+          path="fft"
+          element={
+            <ModulePage
+              title="FFT Analysis"
+              description="Visualize signals in the time domain and their frequency-domain representation."
+              icon={BarChart3}
+              stage="Part 32"
+              features={[
+                "Time-domain signal.",
+                "Frequency spectrum.",
+                "Integration with backend signal-processing results.",
+              ]}
+            />
+          }
+        />
 
-        <footer className="mt-12 border-t border-slate-800 pt-5 text-sm text-slate-500">
-          InstrumentHub · Development environment
-        </footer>
-      </div>
-    </main>
+        <Route
+          path="fbg-analysis"
+          element={
+            <ModulePage
+              title="FBG Analysis"
+              description="Prepare the analysis workspace for fiber Bragg grating spectra."
+              icon={Waves}
+              stage="Part 33"
+              features={[
+                "Spectrum inspection and peak identification.",
+                "Bragg wavelength tracking.",
+                "Analysis results and associated measurement metadata.",
+              ]}
+            />
+          }
+        />
+
+        <Route
+          path="experiments"
+          element={
+            <ModulePage
+              title="Experiments"
+              description="Organize experimental sessions and associate measurements with experiments."
+              icon={FlaskConical}
+              stage="Part 29D"
+              features={[
+                "Experiment listing and details.",
+                "Experiment metadata and lifecycle.",
+                "Association with devices and measurements.",
+              ]}
+            />
+          }
+        />
+
+        <Route
+          path="alerts"
+          element={
+            <ModulePage
+              title="Alerts"
+              description="Prepare the operational monitoring and alert review workspace."
+              icon={AlertTriangle}
+              stage="Part 33"
+              features={[
+                "Alert listing and severity.",
+                "Measurement threshold events when supported.",
+                "Alert status and acknowledgement workflows.",
+              ]}
+            />
+          }
+        />
+
+        <Route
+          path="export"
+          element={
+            <ModulePage
+              title="Export"
+              description="Prepare controlled export of instrumentation data and analysis results."
+              icon={Download}
+              stage="Part 33"
+              features={[
+                "Selection of datasets and time ranges.",
+                "Supported export formats.",
+                "Validation and download handling.",
+              ]}
+            />
+          }
+        />
+
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
 
