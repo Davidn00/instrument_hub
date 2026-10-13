@@ -1,11 +1,13 @@
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { apiRequest } from "./client";
 
 import type {
   Device,
+  DeviceCreate,
   Experiment,
+  ExperimentCreate,
   HealthResponse,
   Measurement,
   ReadinessResponse,
@@ -89,5 +91,45 @@ export function useSpectraQuery(limit = 10) {
       ),
     staleTime: 10_000,
     retry: 1,
+  });
+}
+
+export function useCreateDeviceMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Device, Error, DeviceCreate>({
+    mutationFn: (payload) =>
+      apiRequest<Device>("devices", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.devices,
+      });
+    },
+  });
+}
+
+export function useCreateExperimentMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Experiment, Error, ExperimentCreate>({
+    mutationFn: (payload) =>
+      apiRequest<Experiment>("experiments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: queryKeys.experiments,
+      });
+    },
   });
 }

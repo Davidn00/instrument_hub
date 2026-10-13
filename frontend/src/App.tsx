@@ -4,9 +4,9 @@ import {
   Activity,
   AlertTriangle,
   BarChart3,
-  Cpu,
+  //Cpu,
   Download,
-  FlaskConical,
+  //FlaskConical,
   RadioTower,
   Waves,
 } from "lucide-react";
@@ -14,6 +14,9 @@ import {
 import AppLayout from "./components/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
 import ModulePage from "./pages/ModulePage";
+import DevicesPage from "./pages/DevicesPage";
+import ExperimentsPage from "./pages/ExperimentsPage";
+
 
 
 function NotFoundPage() {
@@ -46,18 +49,9 @@ function App() {
         <Route index element={<DashboardPage />} />
 
         <Route
-          path="devices"
+          path="/devices"
           element={
-            <ModulePage
-              title="Devices"
-              description="Review instrumentation devices and their operational configuration."
-              icon={Cpu}
-              stage="Part 29D"
-              features={[
-                "Device inventory and identification.",
-                "Device type and connection information.",
-                "Operational status and device details.",
-              ]}
+            <DevicesPage
             />
           }
         />
@@ -148,18 +142,9 @@ function App() {
         />
 
         <Route
-          path="experiments"
+          path="/experiments"
           element={
-            <ModulePage
-              title="Experiments"
-              description="Organize experimental sessions and associate measurements with experiments."
-              icon={FlaskConical}
-              stage="Part 29D"
-              features={[
-                "Experiment listing and details.",
-                "Experiment metadata and lifecycle.",
-                "Association with devices and measurements.",
-              ]}
+            <ExperimentsPage
             />
           }
         />

@@ -65,3 +65,26 @@ export interface Experiment {
 export interface SimulatedDeviceInfo {
   [key: string]: JsonValue;
 }
+
+
+export interface ChannelCreate {
+  name: string;
+  unit: string;
+  description?: string | null;
+  metadata: JsonObject;
+}
+
+export interface DeviceCreate {
+  device_id: string;
+  name: string;
+  device_type: string;
+  interface?: string | null;
+  metadata: JsonObject;
+  channels: ChannelCreate[];
+}
+
+export interface ExperimentCreate {
+  name: string;
+  description?: string | null;
+  metadata: JsonObject;
+}

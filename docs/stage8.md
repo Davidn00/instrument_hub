@@ -251,6 +251,61 @@ Polling is not equivalent to a WebSocket data stream.
 - [ ] TypeScript compilation and Vite production build succeed.
 - [ ] Previous backend tests continue to pass.
 
+
+## Parte 29D — Devices y Experiments funcionales
+
+### Objetivo
+
+Convertir las pantallas de dispositivos y experimentos en módulos
+conectados a la API REST de InstrumentHub.
+
+### Archivos implementados
+
+- `frontend/src/api/types.ts`
+  - Tipos de creación `ChannelCreate`, `DeviceCreate` y `ExperimentCreate`.
+- `frontend/src/api/queries.ts`
+  - Mutaciones para crear dispositivos y experimentos.
+  - Invalidación de las consultas correspondientes después de crear registros.
+- `frontend/src/pages/DevicesPage.tsx`
+  - Tabla de dispositivos.
+  - Formulario de creación de dispositivos y canales.
+  - Validación de campos y metadatos JSON.
+- `frontend/src/pages/ExperimentsPage.tsx`
+  - Tabla de experimentos.
+  - Formulario de creación.
+  - Validación y presentación de errores.
+- `frontend/src/App.tsx`
+  - Integración de las rutas de Devices y Experiments.
+
+### Contratos REST
+
+| Operación | Endpoint |
+|---|---|
+| Listar dispositivos | `GET /api/v1/devices` |
+| Crear dispositivo | `POST /api/v1/devices` |
+| Listar experimentos | `GET /api/v1/experiments` |
+| Crear experimento | `POST /api/v1/experiments` |
+
+Los payloads respetan los esquemas `DeviceCreate`, `ChannelCreate`
+y `ExperimentCreate` del backend.
+
+### Validación
+
+- Los campos obligatorios se validan en el frontend.
+- Los metadatos deben ser objetos JSON válidos.
+- Los errores HTTP se muestran en la interfaz.
+- Los botones de envío se deshabilitan durante las operaciones.
+- Las tablas se actualizan mediante invalidación de caché de TanStack Query.
+
+### Limitaciones
+
+- La validación del frontend complementa, pero no sustituye, la
+  validación de FastAPI.
+- Los valores admitidos para `device_type` deben coincidir con el modelo
+  y el esquema reales del backend.
+- La edición y eliminación de registros no forman parte de esta entrega.
+- La finalización de la parte requiere pruebas contra la API real.
+
 ### Status
 
 Stage 8 remains in progress.

@@ -603,7 +603,7 @@ npm run build
 - [x] 29A — Initialize React, TypeScript and Vite.
 - [x] 29B — Professional layout, sidebar and navigation routes.
 - [x] 29C — REST API integration and TypeScript data contracts.
-- [ ] 29D — Functional Devices and Experiments pages.
+- [x] 29D — Functional Devices and Experiments pages.
 - [ ] 30 — Live spectrum visualization.
 - [ ] 31 — Multichannel time-series visualization.
 - [ ] 32 — FFT dashboard.
@@ -659,3 +659,30 @@ actual Uvicorn port.
 
 The dashboard does not implement real-time WebSocket rendering yet.
 That functionality will be completed in the subsequent stages.
+
+#### Parte 29D — Devices y Experiments
+
+Se implementaron formularios y tablas conectados a la API REST de
+InstrumentHub.
+
+**Devices**
+- Consulta de dispositivos registrados.
+- Creación de dispositivos mediante `POST /api/v1/devices`.
+- Validación de campos obligatorios y metadatos JSON.
+- Soporte para añadir y eliminar canales.
+- Visualización del identificador, tipo, interfaz y estado.
+
+**Experiments**
+- Consulta de experimentos registrados.
+- Creación mediante `POST /api/v1/experiments`.
+- Validación del nombre y los metadatos JSON.
+- Visualización del estado, la fecha de inicio y la fecha de finalización.
+
+**Integración**
+- Tipos TypeScript para `DeviceCreate`, `ChannelCreate` y `ExperimentCreate`.
+- Mutaciones con TanStack Query.
+- Invalidación de caché después de una creación exitosa.
+- Estados de carga, errores y confirmaciones.
+
+La Parte 29D se considera completada después de validar la compilación,
+la consulta de datos y la creación de registros contra el backend real.
