@@ -173,3 +173,84 @@ checks pass.
 The overall Stage 8 remains in progress.
 REST integration and functional scientific visualization are
 scheduled for subsequent parts.
+
+
+## 10. Part 29C — REST API integration
+
+### Objective
+
+Connect the React frontend to the existing FastAPI backend through
+a centralized HTTP client and typed data contracts.
+
+### Backend endpoints used
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| GET | `/api/v1/health` | API health |
+| GET | `/api/v1/health/ready` | Database and TimescaleDB readiness |
+| GET | `/api/v1/devices` | Device records |
+| GET | `/api/v1/measurements` | Persisted measurements |
+| GET | `/api/v1/spectra` | Persisted spectra |
+| GET | `/api/v1/experiments` | Experiment records |
+
+### Frontend files
+
+- `src/api/types.ts`
+  - TypeScript contracts corresponding to backend response schemas.
+- `src/api/client.ts`
+  - Centralized fetch client and HTTP error handling.
+- `src/api/queries.ts`
+  - TanStack Query hooks, cache keys and refresh policies.
+- `src/components/Header.tsx`
+  - API health and database readiness indicators.
+- `src/pages/DashboardPage.tsx`
+  - API-backed metrics and recent measurements.
+
+### Development networking
+
+The frontend uses a Vite development proxy for `/api` requests.
+
+`VITE_API_BASE_URL` defaults to `/api/v1`.
+
+`VITE_DEV_PROXY_TARGET` identifies the backend origin.
+
+Docker Compose must map the host port to the container port where
+Uvicorn actually listens. The supplied Dockerfile runs Uvicorn on
+port 8000; a host port of 8001 should therefore map to `8001:8000`.
+
+### Query behavior
+
+- Health status refreshes periodically.
+- Database readiness is checked independently.
+- Devices and experiments use cached REST queries.
+- Recent measurements refresh through periodic HTTP polling.
+- HTTP errors are surfaced in the dashboard.
+
+Polling is not equivalent to a WebSocket data stream.
+
+### Known limitations
+
+- Device and experiment management interfaces are not implemented
+  in this part.
+- Spectrum data is available through the client but is not yet
+  visualized.
+- WebSocket event handling is not implemented in the frontend.
+- Alert persistence exists, but the inspected API router does not
+  expose a REST endpoint for querying alerts.
+- TypeScript interfaces describe expected JSON structures but do
+  not validate server responses at runtime.
+
+### Validation checklist
+
+- [ ] FastAPI health endpoint responds successfully.
+- [ ] Database readiness endpoint confirms PostgreSQL and TimescaleDB.
+- [ ] Vite proxy forwards requests to FastAPI.
+- [ ] Device, experiment and measurement queries return JSON arrays.
+- [ ] Dashboard displays returned data and handles empty responses.
+- [ ] API failures are visible to the user.
+- [ ] TypeScript compilation and Vite production build succeed.
+- [ ] Previous backend tests continue to pass.
+
+### Status
+
+Stage 8 remains in progress.

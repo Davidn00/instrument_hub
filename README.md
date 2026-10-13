@@ -602,7 +602,7 @@ npm run build
 
 - [x] 29A — Initialize React, TypeScript and Vite.
 - [x] 29B — Professional layout, sidebar and navigation routes.
-- [ ] 29C — REST API integration and TypeScript data contracts.
+- [x] 29C — REST API integration and TypeScript data contracts.
 - [ ] 29D — Functional Devices and Experiments pages.
 - [ ] 30 — Live spectrum visualization.
 - [ ] 31 — Multichannel time-series visualization.
@@ -632,3 +632,30 @@ cd frontend
 npm install
 npm run dev
 ```
+#### Part 29C — REST API integration
+
+The frontend now includes:
+
+- A centralized HTTP client with HTTP error handling.
+- TypeScript interfaces for health, readiness, devices, measurements,
+  spectra and experiments.
+- TanStack Query hooks for REST requests and cache management.
+- Independent API health and database readiness indicators.
+- Dashboard metrics populated from actual API responses.
+- A recent-measurements table.
+- Vite development proxy configuration for the FastAPI backend.
+
+The dashboard uses existing API endpoints. Alert counts remain
+unavailable because a REST endpoint for alerts is not yet exposed
+by the backend router.
+
+### Development configuration
+
+The frontend uses `VITE_API_BASE_URL` to identify the API path and
+`VITE_DEV_PROXY_TARGET` to configure the local Vite proxy target.
+
+The Docker Compose API port mapping must expose the container's
+actual Uvicorn port.
+
+The dashboard does not implement real-time WebSocket rendering yet.
+That functionality will be completed in the subsequent stages.
