@@ -88,3 +88,27 @@ export interface ExperimentCreate {
   description?: string | null;
   metadata: JsonObject;
 }
+
+export interface SpectrumStreamEvent {
+  type: "spectrum";
+  data?: Spectrum;
+  payload?: Spectrum;
+  spectrum?: Spectrum;
+}
+
+export interface MeasurementStreamEvent {
+  type: "measurement";
+  data?: Measurement;
+  payload?: Measurement;
+}
+
+export type AcquisitionStreamEvent =
+  | SpectrumStreamEvent
+  | MeasurementStreamEvent;
+
+export type WebSocketConnectionStatus =
+  | "connecting"
+  | "connected"
+  | "reconnecting"
+  | "disconnected"
+  | "error";

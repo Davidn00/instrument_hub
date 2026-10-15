@@ -684,5 +684,23 @@ InstrumentHub.
 - Invalidación de caché después de una creación exitosa.
 - Estados de carga, errores y confirmaciones.
 
-La Parte 29D se considera completada después de validar la compilación,
-la consulta de datos y la creación de registros contra el backend real.
+#### Parte 30 — Espectros y adquisición en vivo
+
+**Visualización**
+- Gráfico de espectro óptico con Plotly.js.
+- Eje X: longitud de onda.
+- Eje Y: intensidad.
+- Unidades obtenidas de los datos recibidos.
+- Último espectro REST como respaldo inicial.
+
+**WebSockets**
+- Conexión a `/api/v1/ws/measurements`.
+- Reconexión automática con espera progresiva.
+- Validación básica de mensajes JSON.
+- Estado de conexión visible en la interfaz.
+
+**Control de adquisición**
+- Inicio mediante `POST /api/v1/acquisition/start`.
+- Detención mediante `POST /api/v1/acquisition/stop`.
+- Selección del dispositivo registrado.
+- Estados de carga y errores de petición.

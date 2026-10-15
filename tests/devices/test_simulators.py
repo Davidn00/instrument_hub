@@ -75,3 +75,44 @@ def test_fbg_acquisition() -> None:
 
     assert signal.number_of_samples == 1000
     assert signal.unit == "a.u."
+
+
+@pytest.mark.asyncio
+async def test_fbg_read_generates_associated_spectrum() -> None:
+    device = SimulatedFBGDevice(
+        device_id="fbg-live-001",
+        points=500,
+        noise_amplitude=0.0,
+    )
+
+    await device.connect()
+
+    measurement = await device.read()
+    spectrum = device.get_spectrum_for_measurement(
+        measurement.timestamp,
+    )
+
+    assert spectrum is not None
+    assert measurement.device_id == "fbg-live-001"
+    assert measurement.channel == "FBG-1"
+    assert measurement.unit == "nm"
+
+    assert spectrum.device_id == measurement.device_id
+    assert spectrum.timestamp == measurement.timestamp
+    assert len(spectrum.wavelength) == 500
+    assert len(spectrum.intensity) == 500
+
+    assert spectrum.wavelength_unit == "nm"
+    assert spectrum.intensity_unit == "a.u."
+
+    assert measurement.value == spectrum.peak_wavelength
+
+    # La asociación se consume una sola vez.
+    assert (
+        device.get_spectrum_for_measurement(
+            measurement.timestamp,
+        )
+        is None
+    )
+
+    await device.disconnect()

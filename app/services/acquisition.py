@@ -157,11 +157,24 @@ class AcquisitionService:
 
                 await measurement_repository.add(measurement)
 
-                spectrum = getattr(
+                get_spectrum_for_measurement = getattr(
                     instrument,
-                    "last_spectrum",
+                    "get_spectrum_for_measurement",
                     None,
                 )
+
+                if callable(get_spectrum_for_measurement):
+                    spectrum = get_spectrum_for_measurement(
+                        measurement.timestamp,
+                    )
+                else:
+                    # Compatibilidad con instrumentos reales, como IBSEN,
+                    # que exponen su última lectura mediante last_spectrum.
+                    spectrum = getattr(
+                        instrument,
+                        "last_spectrum",
+                        None,
+                    )
 
                 spectrum_repository = SpectrumRepository(session)
 

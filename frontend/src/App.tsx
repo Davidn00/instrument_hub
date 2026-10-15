@@ -7,7 +7,7 @@ import {
   //Cpu,
   Download,
   //FlaskConical,
-  RadioTower,
+  //RadioTower,
   Waves,
 } from "lucide-react";
 
@@ -16,6 +16,8 @@ import DashboardPage from "./pages/DashboardPage";
 import ModulePage from "./pages/ModulePage";
 import DevicesPage from "./pages/DevicesPage";
 import ExperimentsPage from "./pages/ExperimentsPage";
+import SpectrumPage from "./pages/SpectrumPage";
+import LiveAcquisitionPage from "./pages/LiveAcquisitionPage";
 
 
 
@@ -55,40 +57,9 @@ function App() {
             />
           }
         />
+        <Route path="/live-acquisition" element={<LiveAcquisitionPage />} />
 
-        <Route
-          path="live-acquisition"
-          element={
-            <ModulePage
-              title="Live Acquisition"
-              description="Monitor the acquisition workflow and prepare the real-time measurement workspace."
-              icon={RadioTower}
-              stage="Parts 29C and 31"
-              features={[
-                "Acquisition controls based on supported backend operations.",
-                "Live measurement stream through WebSocket.",
-                "Connection state, errors and reconnection handling.",
-              ]}
-            />
-          }
-        />
-
-        <Route
-          path="spectrum"
-          element={
-            <ModulePage
-              title="Spectrum"
-              description="Explore wavelength and intensity data from supported optical instrumentation."
-              icon={Waves}
-              stage="Part 30"
-              features={[
-                "Intensity versus wavelength.",
-                "Interactive zoom and axis controls.",
-                "Live spectrum updates when available from the backend.",
-              ]}
-            />
-          }
-        />
+        <Route path="/spectrum" element={<SpectrumPage />} />
 
         <Route
           path="time-series"

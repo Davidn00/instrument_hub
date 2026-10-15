@@ -306,6 +306,82 @@ y `ExperimentCreate` del backend.
 - La edición y eliminación de registros no forman parte de esta entrega.
 - La finalización de la parte requiere pruebas contra la API real.
 
+
+## Parte 30 — Visualización de espectros y adquisición en vivo
+
+### Objetivo
+
+Visualizar espectros ópticos y controlar la adquisición desde el frontend
+utilizando la API REST y los eventos WebSocket de FastAPI.
+
+### Dependencias
+
+- `plotly.js-dist-min`
+- `react-plotly.js`
+- `@types/react-plotly.js`
+
+### Archivos implementados
+
+- `frontend/src/api/types.ts`
+  - Tipos de eventos de espectro y medición.
+  - Estados de conexión WebSocket.
+- `frontend/src/hooks/useSpectrumStream.ts`
+  - Gestión de la conexión WebSocket.
+  - Validación básica del evento de espectro.
+  - Reconexión progresiva y limpieza de recursos.
+- `frontend/src/components/SpectrumChart.tsx`
+  - Gráfico de longitud de onda frente a intensidad.
+- `frontend/src/pages/SpectrumPage.tsx`
+  - Visualización del último espectro disponible.
+  - Respaldo inicial mediante REST.
+- `frontend/src/pages/LiveAcquisitionPage.tsx`
+  - Selección de dispositivo.
+  - Inicio y detención de adquisición.
+  - Estado de conexión y visualización en vivo.
+- `frontend/src/App.tsx`
+  - Rutas funcionales para Spectrum y Live Acquisition.
+
+### Contratos utilizados
+
+| Operación | Endpoint |
+|---|---|
+| Espectros almacenados | `GET /api/v1/spectra` |
+| Iniciar adquisición | `POST /api/v1/acquisition/start` |
+| Detener adquisición | `POST /api/v1/acquisition/stop` |
+| Eventos en vivo | `WS /api/v1/ws/measurements` |
+
+### Eventos WebSocket
+
+El frontend reconoce eventos de tipo `spectrum` y extrae las propiedades
+`wavelength`, `intensity`, `wavelength_unit`, `intensity_unit`,
+`device_id` y `timestamp`.
+
+Los arrays de longitud de onda e intensidad deben ser numéricos,
+no vacíos y tener la misma longitud.
+
+### Limitaciones
+
+- La visualización en vivo depende de que el backend publique eventos
+  `spectrum` con un formato compatible.
+- La conexión WebSocket no inicia por sí misma la adquisición.
+- El estado local de inicio o detención no constituye una confirmación
+  independiente del hardware.
+- La reconexión no garantiza la recuperación de eventos perdidos.
+- El último espectro recibido se conserva en memoria; no constituye
+  un historial completo.
+- La estructura real de los mensajes debe contrastarse con el publicador
+  WebSocket del backend.
+
+### Validación
+
+- Compilación TypeScript y build de Vite.
+- Consulta de espectros históricos.
+- Conexión WebSocket y recepción de un evento `spectrum`.
+- Actualización de la curva con nuevos espectros.
+- Inicio y detención mediante los endpoints REST.
+- Manejo de desconexión y errores de la API.
+
+
 ### Status
 
 Stage 8 remains in progress.
