@@ -381,7 +381,150 @@ no vacíos y tener la misma longitud.
 - Inicio y detención mediante los endpoints REST.
 - Manejo de desconexión y errores de la API.
 
+## Parte 31 — Live sensor data
+
+### Objetivo
+
+Visualizar mediciones de varios dispositivos y canales en tiempo real
+utilizando el endpoint WebSocket existente.
+
+### Implementación
+
+- `useMeasurementStream.ts`: recibe, valida y almacena eventos `measurement`.
+- `measurementSeries.ts`: agrupa mediciones por dispositivo, canal y unidad,
+  y estima la frecuencia de muestreo mediante sus marcas temporales.
+- `MeasurementTimeSeriesChart.tsx`: representa varias series temporales.
+- `TimeSeriesPage.tsx`: selecciona dispositivos y controla su adquisición.
+
+### Limitaciones
+
+- El buffer de 5.000 mediciones se conserva en memoria del navegador.
+- Cada serie muestra hasta 600 puntos en la Parte 31.
+- Los datos históricos persistidos no se cargan automáticamente en el buffer.
+- Las distintas unidades físicas no comparten necesariamente una escala comparable.
+- La recepción de eventos no garantiza que todos los dispositivos estén adquiriendo.
+
+### Validación
+
+- [ ] Build de TypeScript y Vite.
+- [ ] Recepción de eventos `measurement`.
+- [ ] Visualización de varias series simultáneas.
+- [ ] Inicio y detención de varios dispositivos.
+- [ ] Comprobación de reconexión WebSocket.
+
+## Parte 32 — FFT dashboard
+
+### Objetivo
+
+Comparar una señal en el dominio temporal con su representación frecuencial
+mediante una FFT calculada en el backend.
+
+### Implementación
+
+- `app/api/v1/schemas/analysis.py`: contratos de petición y respuesta.
+- `app/api/v1/routes/analysis.py`: endpoint de análisis FFT.
+- `app/api/v1/router.py`: registro del router de análisis.
+- `app/devices/simulators/waveform.py`: generación de una señal sinusoidal variable.
+- `app/services/acquisition.py`: configuración de parámetros del simulador.
+- `frontend/src/pages/FFTPage.tsx`: selección de serie y visualización de ambos dominios.
+
+### Endpoint
+
+`POST /api/v1/analysis/fft`
+
+La petición incluye las muestras, la frecuencia de muestreo estimada y la opción
+de eliminar la media. La respuesta incluye el eje temporal relativo, los valores
+originales, las frecuencias, las amplitudes y la frecuencia dominante.
+
+### Consideraciones de procesamiento
+
+- Se requieren al menos 16 muestras y se admiten hasta 4.096 por petición.
+- El cálculo usa la función `fft_spectrum` existente.
+- La resolución frecuencial depende de la duración de la ventana y de la
+  frecuencia de muestreo.
+- La FFT presupone un muestreo aproximadamente uniforme.
+- La frecuencia dominante excluye la componente DC.
+- La frecuencia de muestreo estimada puede variar por la temporización del sistema.
+
+### Validación
+
+- [ ] Pruebas unitarias y de API para FFT.
+- [ ] Detección de una senoide de frecuencia conocida.
+- [ ] Validación de peticiones incorrectas.
+- [ ] Visualización de la señal temporal.
+- [ ] Visualización del espectro frecuencial.
+- [ ] Build de frontend y suite completa de backend.
+
+## Parte 32 — FFT dashboard y FBG Analysis
+
+### Objetivo
+
+Completar las herramientas de análisis científico del frontend con
+análisis FFT y análisis de espectros de redes de Bragg.
+
+### FBG Analysis: arquitectura
+
+El frontend selecciona un dispositivo y un espectro persistido.
+El backend consulta `SpectrumRepository` y reutiliza las funciones
+existentes en `app.processing.fbg`.
+
+### Operaciones de análisis
+
+- Reducción de ruido mediante Savitzky–Golay.
+- Detección de picos con `scipy.signal.find_peaks`.
+- Refinamiento cuadrático de la longitud de onda del pico.
+- Cálculo del pico más fuerte y de métricas RMS.
+- Seguimiento de λB en el historial disponible.
+- Cálculo de Δλ = λB(t) − λ0.
+- Respuesta con parámetros de detección y metadata del espectro.
+
+### API
+
+`POST /api/v1/fbg/analyze`
+
+El cuerpo identifica el dispositivo y, opcionalmente, la marca temporal
+del espectro. También permite configurar el límite de historial, la
+prominencia mínima, la reducción de ruido, el refinamiento y la
+longitud de onda de referencia.
+
+La API devuelve el espectro seleccionado, la intensidad filtrada,
+los picos detectados, las métricas y los puntos de seguimiento.
+
+### Frontend
+
+`frontend/src/pages/FBGAnalysisPage.tsx` reemplaza la página provisional
+de `ModulePage` en `/fbg-analysis`.
+
+La página proporciona:
+- Selección de dispositivo y espectro histórico.
+- Comparación de espectro original y filtrado.
+- Marcadores y tabla de picos.
+- Longitud de onda de Bragg e intensidad máxima.
+- Métrica RMS.
+- Gráficas temporales de λB y Δλ.
+- Visualización de metadata y parámetros del análisis.
+
+### Limitaciones
+
+- El análisis se basa en los espectros almacenados que devuelve la API.
+- El historial de seguimiento está limitado por `history_limit`.
+- La detección de picos depende de la calidad del espectro y de sus parámetros.
+- La calibración a temperatura o deformación requiere coeficientes
+  físicos del sensor; no se infiere únicamente a partir de Δλ.
+- Los resultados sintéticos validan el algoritmo y la integración, pero
+  no sustituyen la validación con datos de un interrogador óptico real.
+
+### Validación
+
+- [ ] Prueba de integración de `POST /api/v1/fbg/analyze`.
+- [ ] Detección de una longitud de onda conocida en espectros sintéticos.
+- [ ] Seguimiento temporal de varios espectros.
+- [ ] Respuesta correcta cuando no hay espectros almacenados.
+- [ ] Manejo de parámetros inválidos.
+- [ ] Build de Vite y TypeScript.
+- [ ] Suite completa de pruebas del backend.
+
 
 ### Status
 
-Stage 8 remains in progress.
+Stage 8 completed.

@@ -604,10 +604,10 @@ npm run build
 - [x] 29B — Professional layout, sidebar and navigation routes.
 - [x] 29C — REST API integration and TypeScript data contracts.
 - [x] 29D — Functional Devices and Experiments pages.
-- [ ] 30 — Live spectrum visualization.
-- [ ] 31 — Multichannel time-series visualization.
-- [ ] 32 — FFT dashboard.
-- [ ] 33 — FBG analysis, alerts and export.
+- [x] 30 — Live spectrum visualization.
+- [x] 31 — Multichannel time-series visualization.
+- [x] 32 — FFT dashboard.
+- [x] 33 — FBG analysis, alerts and export.
 - [ ] 34 — Testing, security, documentation and deployment.
 
 #### Part 29B — Implemented
@@ -657,8 +657,10 @@ The frontend uses `VITE_API_BASE_URL` to identify the API path and
 The Docker Compose API port mapping must expose the container's
 actual Uvicorn port.
 
-The dashboard does not implement real-time WebSocket rendering yet.
-That functionality will be completed in the subsequent stages.
+The frontend implements live spectrum visualization and multichannel
+time-series monitoring through the existing WebSocket endpoint.
+FFT analysis is calculated by the backend and displayed alongside
+the selected signal in the time domain.
 
 #### Parte 29D — Devices y Experiments
 
@@ -704,3 +706,95 @@ InstrumentHub.
 - Detención mediante `POST /api/v1/acquisition/stop`.
 - Selección del dispositivo registrado.
 - Estados de carga y errores de petición.
+
+#### Parte 31 — Live sensor data
+
+**Funcionalidades**
+- Recepción de eventos `measurement` por WebSocket.
+- Visualización de series temporales multicanal con Plotly.
+- Agrupación por dispositivo, canal y unidad.
+- Selección de dispositivos y control de adquisición desde la página.
+- Buffer de hasta 5.000 mediciones recibidas en el frontend.
+- Reconexión automática del flujo WebSocket.
+
+**Archivos principales**
+- `frontend/src/hooks/useMeasurementStream.ts`
+- `frontend/src/utils/measurementSeries.ts`
+- `frontend/src/components/MeasurementTimeSeriesChart.tsx`
+- `frontend/src/pages/TimeSeriesPage.tsx`
+
+**Validación**
+- [ ] Recepción de mediciones en vivo.
+- [ ] Visualización de dos o más series simultáneas.
+- [ ] Inicio y detención de adquisición desde la página.
+- [ ] Verificación de la conexión y reconexión WebSocket.
+
+#### Parte 32 — FFT dashboard
+
+**Funcionalidades**
+- Visualización de una señal en el dominio temporal.
+- Cálculo de FFT mediante el backend FastAPI.
+- Visualización de amplitud frente a frecuencia.
+- Estimación de la frecuencia de muestreo a partir de las marcas temporales.
+- Cálculo y visualización de la frecuencia dominante.
+- Validación de la cantidad de muestras y la frecuencia de muestreo.
+
+**Backend**
+- `app/api/v1/schemas/analysis.py`
+- `app/api/v1/routes/analysis.py`
+- Endpoint `POST /api/v1/analysis/fft`
+- Reutilización de `app/processing/spectral.py`.
+
+**Frontend**
+- `frontend/src/pages/FFTPage.tsx`
+- Reutilización de `useMeasurementStream`,
+  `buildMeasurementSeries` y `MeasurementTimeSeriesChart`.
+
+**Validación**
+- [ ] Pruebas del endpoint FFT.
+- [ ] Detección de una frecuencia conocida.
+- [ ] Rechazo de muestras insuficientes.
+- [ ] Comparación visual de los dominios temporal y frecuencial.
+- [ ] Build del frontend y suite completa del backend.
+
+#### Parte 32 — FBG Analysis
+
+**Objetivo**
+
+Conectar el análisis de redes de Bragg con los espectros almacenados en InstrumentHub.
+
+**Backend**
+- Endpoint `POST /api/v1/fbg/analyze`.
+- Selección del dispositivo y espectro almacenado.
+- Reducción de ruido con Savitzky–Golay.
+- Detección de picos mediante `scipy.signal.find_peaks`.
+- Refinamiento cuadrático de la posición del pico.
+- Cálculo de longitud de onda de Bragg, intensidad máxima y RMS.
+- Seguimiento de λB y cálculo de Δλ respecto a una longitud de onda de referencia.
+- Respuesta con metadata de adquisición y parámetros de análisis.
+
+**Frontend**
+- `frontend/src/pages/FBGAnalysisPage.tsx`.
+- Selección de dispositivo y espectro histórico.
+- Comparación entre el espectro original y el filtrado.
+- Marcadores de picos detectados.
+- Tabla de picos, métricas y metadata.
+- Gráficas temporales de λB y Δλ.
+
+**Archivos principales**
+- `app/api/v1/schemas/fbg.py`
+- `app/api/v1/routes/fbg.py`
+- `app/api/v1/router.py`
+- `frontend/src/api/types.ts`
+- `frontend/src/pages/FBGAnalysisPage.tsx`
+- `frontend/src/App.tsx`
+- `tests/api/test_fbg.py`
+
+**Validación**
+- [ ] Prueba de integración del endpoint.
+- [ ] Detección de picos en un espectro sintético.
+- [ ] Seguimiento temporal de varios espectros.
+- [ ] Visualización del espectro original y filtrado.
+- [ ] Visualización de los picos y de Δλ.
+- [ ] Validación de espectros inexistentes y parámetros incorrectos.
+- [ ] Build del frontend y suite completa del backend.

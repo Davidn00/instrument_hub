@@ -226,7 +226,12 @@ class AcquisitionService:
             return SimulatedPressureDevice(device_id=device.device_id)
 
         if device.device_type == "sine":
-            return SimulatedSineDevice(device_id=device.device_id)
+            return SimulatedSineDevice(
+                device_id=device.device_id,
+                frequency=float(metadata.get("frequency", 1.0)),
+                amplitude=float(metadata.get("amplitude", 1.0)),
+                sampling_rate=float(metadata.get("sampling_rate", 10.0)),
+            )
 
         if device.device_type == "ecg":
             return SimulatedECGDevice(device_id=device.device_id)

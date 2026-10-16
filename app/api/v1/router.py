@@ -3,12 +3,14 @@ from fastapi import APIRouter
 from app.api.v1.routes.acquisition import (
     router as acquisition_router,
 )
+from app.api.v1.routes.analysis import router as analysis_router
 from app.api.v1.routes.devices import (
     router as devices_router,
 )
 from app.api.v1.routes.experiments import (
     router as experiments_router,
 )
+from app.api.v1.routes.fbg import router as fbg_router
 from app.api.v1.routes.health import (
     router as health_router,
 )
@@ -67,3 +69,10 @@ api_router.include_router(
     websocket_router,
     tags=["WebSocket"],
 )
+
+api_router.include_router(
+    analysis_router,
+    tags=["Analysis"],
+)
+
+api_router.include_router(fbg_router)

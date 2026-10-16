@@ -1,14 +1,14 @@
 
 import { Link, Route, Routes } from "react-router-dom";
 import {
-  Activity,
+  //Activity,
   AlertTriangle,
-  BarChart3,
+  //BarChart3,
   //Cpu,
   Download,
   //FlaskConical,
   //RadioTower,
-  Waves,
+  //Waves,
 } from "lucide-react";
 
 import AppLayout from "./components/AppLayout";
@@ -18,6 +18,9 @@ import DevicesPage from "./pages/DevicesPage";
 import ExperimentsPage from "./pages/ExperimentsPage";
 import SpectrumPage from "./pages/SpectrumPage";
 import LiveAcquisitionPage from "./pages/LiveAcquisitionPage";
+import TimeSeriesPage from "./pages/TimeSeriesPage";
+import FFTPage from "./pages/FFTPage";
+import FBGAnalysisPage from "./pages/FBGAnalysisPage";
 
 
 
@@ -63,53 +66,16 @@ function App() {
 
         <Route
           path="time-series"
-          element={
-            <ModulePage
-              title="Time Series"
-              description="Inspect measurement histories across instrument channels."
-              icon={Activity}
-              stage="Part 31"
-              features={[
-                "Value versus time.",
-                "Multiple channels and time-range selection.",
-                "Descriptive statistics and interactive Plotly charts.",
-              ]}
-            />
-          }
+          element={<TimeSeriesPage />}
         />
 
         <Route
           path="fft"
-          element={
-            <ModulePage
-              title="FFT Analysis"
-              description="Visualize signals in the time domain and their frequency-domain representation."
-              icon={BarChart3}
-              stage="Part 32"
-              features={[
-                "Time-domain signal.",
-                "Frequency spectrum.",
-                "Integration with backend signal-processing results.",
-              ]}
-            />
-          }
+          element={<FFTPage />}
         />
-
         <Route
           path="fbg-analysis"
-          element={
-            <ModulePage
-              title="FBG Analysis"
-              description="Prepare the analysis workspace for fiber Bragg grating spectra."
-              icon={Waves}
-              stage="Part 33"
-              features={[
-                "Spectrum inspection and peak identification.",
-                "Bragg wavelength tracking.",
-                "Analysis results and associated measurement metadata.",
-              ]}
-            />
-          }
+          element={<FBGAnalysisPage />}
         />
 
         <Route

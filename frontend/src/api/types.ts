@@ -112,3 +112,79 @@ export type WebSocketConnectionStatus =
   | "reconnecting"
   | "disconnected"
   | "error";
+
+
+export interface MeasurementSeries {
+  key: string;
+  label: string;
+  deviceId: string;
+  channel: string;
+  unit: string;
+  points: Measurement[];
+}
+
+export interface FftAnalysisRequest {
+  samples: number[];
+  sampling_rate_hz: number;
+  remove_mean: boolean;
+}
+
+export interface FftAnalysisResponse {
+  sample_count: number;
+  sampling_rate_hz: number;
+  time_seconds: number[];
+  signal_values: number[];
+  frequencies_hz: number[];
+  amplitudes: number[];
+  dominant_frequency_hz: number;
+  remove_mean: boolean;
+}
+
+
+export interface FBGPeakResult {
+  index: number;
+  wavelength_nm: number;
+  intensity: number;
+  prominence: number | null;
+  width_nm: number | null;
+}
+
+export interface FBGTrackingPoint {
+  timestamp: string;
+  wavelength_nm: number;
+  delta_wavelength_nm: number;
+  peak_intensity: number;
+}
+
+export interface FBGAnalysisRequest {
+  device_id: string;
+  spectrum_timestamp?: string | null;
+  history_limit?: number;
+  prominence?: number | null;
+  height?: number | null;
+  distance?: number | null;
+  width?: number | null;
+  noise_reduction?: boolean;
+  noise_window_length?: number;
+  noise_polyorder?: number;
+  refinement?: "none" | "quadratic";
+  reference_wavelength_nm?: number | null;
+}
+
+export interface FBGAnalysisResponse {
+  device_id: string;
+  spectrum: Spectrum;
+  filtered_intensity: number[];
+  peaks: FBGPeakResult[];
+  peak_wavelength_nm: number | null;
+  peak_intensity: number | null;
+  rms: number;
+  reference_wavelength_nm: number | null;
+  tracking_points: FBGTrackingPoint[];
+  analyzed_spectra_count: number;
+  noise_reduction: boolean;
+  noise_window_length: number;
+  noise_polyorder: number;
+  prominence: number | null;
+  refinement: "none" | "quadratic";
+}

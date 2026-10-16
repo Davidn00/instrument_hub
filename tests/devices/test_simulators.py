@@ -1,9 +1,12 @@
+import asyncio
+
 import pytest
 
 from app.devices.simulators import (
     SimulatedECGDevice,
     SimulatedFBGDevice,
     SimulatedPressureDevice,
+    SimulatedSineDevice,
     SimulatedTemperatureDevice,
 )
 
@@ -114,5 +117,29 @@ async def test_fbg_read_generates_associated_spectrum() -> None:
         )
         is None
     )
+
+    await device.disconnect()
+
+
+@pytest.mark.asyncio
+async def test_sine_device_generates_changing_measurements() -> None:
+    device = SimulatedSineDevice(
+        device_id="sine-fft-test",
+        frequency=1.0,
+        amplitude=1.0,
+        sampling_rate=10.0,
+    )
+
+    await device.connect()
+
+    first = await device.read()
+    await asyncio.sleep(0.05)
+    second = await device.read()
+
+    assert first.device_id == "sine-fft-test"
+    assert second.device_id == "sine-fft-test"
+    assert first.unit == "V"
+    assert second.unit == "V"
+    assert first.value != second.value
 
     await device.disconnect()
