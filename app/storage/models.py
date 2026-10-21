@@ -483,3 +483,54 @@ class AlertRecord(Base):
         default=dict,
         server_default="{}",
     )
+
+
+class AlertRuleRecord(Base):
+    """Configurable threshold rule evaluated against incoming data."""
+
+    __tablename__ = "alert_rules"
+
+    id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+    )
+
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+
+    # temperature, strain, wavelength_drift or signal_quality
+    metric: Mapped[str] = mapped_column(String(64), nullable=False, index=True)
+
+    # gt, gte, lt, lte
+    operator: Mapped[str] = mapped_column(String(8), nullable=False)
+
+    threshold: Mapped[float] = mapped_column(Float, nullable=False)
+
+    # Optional filters. Null means the rule applies to every matching source.
+    device_id: Mapped[str | None] = mapped_column(
+        String(128), nullable=True, index=True
+    )
+    channel: Mapped[str | None] = mapped_column(String(128), nullable=True)
+
+    severity: Mapped[str] = mapped_column(
+        String(32), nullable=False, default="WARNING", server_default="WARNING"
+    )
+
+    enabled: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default="true"
+    )
+
+    # Notification destinations and additional rule parameters.
+    metadata_: Mapped[dict[str, Any]] = mapped_column(
+        "metadata",
+        JSONB,
+        nullable=False,
+        default=dict,
+        server_default="{}",
+    )
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=func.now(),
+    )

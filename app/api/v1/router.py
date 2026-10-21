@@ -3,6 +3,9 @@ from fastapi import APIRouter
 from app.api.v1.routes.acquisition import (
     router as acquisition_router,
 )
+from app.api.v1.routes.alerts import (
+    router as alerts_router,
+)
 from app.api.v1.routes.analysis import router as analysis_router
 from app.api.v1.routes.devices import (
     router as devices_router,
@@ -76,3 +79,8 @@ api_router.include_router(
 )
 
 api_router.include_router(fbg_router)
+
+api_router.include_router(
+    alerts_router,
+    tags=["Alerts"],
+)

@@ -390,10 +390,6 @@ The project uses:
 
 ## Project Status
 
-Current development stage:
-
-**Stage 7 — Backend, Storage and Real-Time Acquisition**
-
 ### Stage 1 — Architecture and Core
 
 * [x] Initial architecture
@@ -535,6 +531,29 @@ Current development stage:
 * [x] WebSocket tests
 * [x] Stage 7 documentation
 
+### Stage 8: Frontend Dashboard
+
+- [x] 29A — Initialize React, TypeScript and Vite.
+- [x] 29B — Professional layout, sidebar and navigation routes.
+- [x] 29C — REST API integration and TypeScript data contracts.
+- [x] 29D — Functional Devices and Experiments pages.
+- [x] 30 — Live spectrum visualization.
+- [x] 31 — Multichannel time-series visualization.
+- [x] 32 — FFT dashboard.
+- [x] 33 — FBG analysis, alerts and export.
+- [x] 34 — Testing, security and documentation.
+
+**Stage 9 — Automation, Alerts and Advanced Analysis**
+
+- [x] Stage 1 — Architecture and Core
+- [x] Stage 2 — Instrument Simulation
+- [x] Stage 3 — Acquisition
+- [x] Stage 4 — Signal Processing
+- [x] Stage 5 — IBSEN Instrument Integration
+- [x] Stage 6 — FBG Analysis
+- [x] Stage 7 — Storage and Real-Time Acquisition
+- [x] Stage 8 — Professional Frontend Dashboard
+- [ ] Stage 9 — Automation, Alerts and Advanced Analysis
 
 ## Frontend
 
@@ -596,19 +615,6 @@ Build the frontend:
 ```bash
 npm run build
 ```
-
-
-### Stage 8 progress
-
-- [x] 29A — Initialize React, TypeScript and Vite.
-- [x] 29B — Professional layout, sidebar and navigation routes.
-- [x] 29C — REST API integration and TypeScript data contracts.
-- [x] 29D — Functional Devices and Experiments pages.
-- [x] 30 — Live spectrum visualization.
-- [x] 31 — Multichannel time-series visualization.
-- [x] 32 — FFT dashboard.
-- [x] 33 — FBG analysis, alerts and export.
-- [ ] 34 — Testing, security, documentation and deployment.
 
 #### Part 29B — Implemented
 
@@ -798,3 +804,56 @@ Conectar el análisis de redes de Bragg con los espectros almacenados en Instrum
 - [ ] Visualización de los picos y de Δλ.
 - [ ] Validación de espectros inexistentes y parámetros incorrectos.
 - [ ] Build del frontend y suite completa del backend.
+
+## Experiments
+
+Stage 9 extends experiment management with:
+
+- Device and channel references.
+- Acquisition and processing configuration.
+- Experiment lifecycle tracking.
+- Structured result records in JSONB metadata.
+- REST endpoints for experiment retrieval and result submission.
+
+Experiments are configuration and traceability entities.
+Creating an experiment does not automatically start acquisition.
+
+## Alerting and Notifications
+
+InstrumentHub supports configurable threshold rules for:
+
+- Temperature.
+- Strain.
+- FBG wavelength drift.
+- Numeric signal-quality scores.
+
+Rules can be filtered by device and channel.
+
+Alert events are stored in PostgreSQL and exposed through
+the `/api/v1/alerts` API.
+
+Notification channels include:
+
+- WebSocket alert events.
+- Optional SMTP email.
+- React dashboard alert history and acknowledgement.
+
+## Stage 9 Configuration
+
+The following environment variables configure optional email delivery:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_USERNAME`
+- `SMTP_PASSWORD`
+- `SMTP_FROM_EMAIL`
+- `ALERT_EMAIL_TO`
+- `SMTP_STARTTLS`
+
+Keep credentials in the local environment and never commit
+production secrets.
+
+## Stage 9 Documentation
+
+See [Stage 9 — Automation, Alerts and Advanced Analysis](docs/stage9.md)
+for the architecture, endpoints, configuration and validation procedure.

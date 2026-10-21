@@ -19,6 +19,8 @@ from app.devices.simulators import (
     SimulatedTemperatureDevice,
 )
 from app.realtime.websocket import WebSocketManager
+from app.services.alerting import AlertingService
+from app.services.notifications import NotificationService
 from app.storage.models import DeviceRecord
 from app.storage.repositories import (
     ChannelRepository,
@@ -45,8 +47,10 @@ class AcquisitionService:
     ) -> None:
         self.session_factory = session_factory
         self.websocket_manager = websocket_manager
-
         self._runtimes: dict[str, AcquisitionRuntime] = {}
+
+        # Share the existing connection manager with alert notifications.
+        self.notification_service = NotificationService(websocket_manager)
 
     def is_running(
         self,
@@ -181,7 +185,17 @@ class AcquisitionService:
                 if spectrum is not None:
                     await spectrum_repository.add(spectrum)
 
+                # Evaluate rules in the same database transaction as the measurement.
+                # This prevents alerts from being committed before their measurement.
+
+                alerting_service = AlertingService(session)
+                new_alerts = await alerting_service.evaluate_measurement(measurement)
+
                 await session.commit()
+
+            # Publish only persisted alerts. Delivery failures must not roll back data.
+            for alert in new_alerts:
+                await self.notification_service.publish_alert(alert)
 
             await self.websocket_manager.broadcast(
                 {

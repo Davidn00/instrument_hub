@@ -2,7 +2,7 @@
 import { Link, Route, Routes } from "react-router-dom";
 import {
   //Activity,
-  AlertTriangle,
+  //AlertTriangle,
   //BarChart3,
   //Cpu,
   Download,
@@ -21,6 +21,7 @@ import LiveAcquisitionPage from "./pages/LiveAcquisitionPage";
 import TimeSeriesPage from "./pages/TimeSeriesPage";
 import FFTPage from "./pages/FFTPage";
 import FBGAnalysisPage from "./pages/FBGAnalysisPage";
+import AlertsPage from "./pages/AlertsPage";
 
 
 
@@ -85,23 +86,7 @@ function App() {
             />
           }
         />
-
-        <Route
-          path="alerts"
-          element={
-            <ModulePage
-              title="Alerts"
-              description="Prepare the operational monitoring and alert review workspace."
-              icon={AlertTriangle}
-              stage="Part 33"
-              features={[
-                "Alert listing and severity.",
-                "Measurement threshold events when supported.",
-                "Alert status and acknowledgement workflows.",
-              ]}
-            />
-          }
-        />
+        <Route path="alerts" element={<AlertsPage />} />
 
         <Route
           path="export"
