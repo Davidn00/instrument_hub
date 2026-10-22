@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "synthetic_20261022T213734Z_1_100hz",
+  "created_at_utc": "2026-10-22T21:37:34.858360+00:00",
+  "environment": {
+    "python_version": "3.12.14",
+    "platform": "Windows-11-10.0.26200-SP0",
+    "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+    "logical_cpu_count": 16,
+    "physical_cpu_count": 8,
+    "numpy_version": "2.5.3",
+    "psutil_version": "7.2.2"
+  },
+  "result": {
+    "source": "synthetic_processing",
+    "sampling_rate_hz": 100,
+    "block_duration_seconds": 1.0,
+    "samples_per_block": 100,
+    "iterations": 100,
+    "warmup_iterations": 10,
+    "processed_samples": 10000,
+    "processing_latency_p50_ms": 0.7480999920517206,
+    "processing_latency_p95_ms": 0.8831799932522698,
+    "processing_latency_p99_ms": 1.410184997948818,
+    "throughput_samples_per_second": 127278.11924002857,
+    "target_block_budget_ms": 1000.0,
+    "p95_meets_realtime_budget": true,
+    "wall_time_seconds": 0.07856809999793768,
+    "process_cpu_time_seconds": 0.078125,
+    "cpu_percent_one_core": 99.43603065627232,
+    "initial_rss_bytes": 101515264,
+    "final_rss_bytes": 101945344,
+    "peak_observed_rss_bytes": 101879808
+  }
+}
