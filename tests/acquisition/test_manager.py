@@ -70,23 +70,34 @@ async def test_manager_starts_acquisition_and_buffers_measurements() -> None:
 
 
 @pytest.mark.asyncio
-async def test_manager_drops_oldest_when_buffer_is_full() -> None:
+def test_manager_drops_oldest_when_buffer_is_full() -> None:
     instrument = FakeInstrument()
-
     manager = AcquisitionManager(
         instrument,
         buffer_size=2,
         drop_oldest=True,
     )
-    await manager.start()
 
-    for _ in range(20):
-        await asyncio.sleep(0.005)
-        if manager.stats.dropped_measurements > 0:
-            break
+    def measurement(value: float) -> Measurement:
+        return Measurement(
+            timestamp=datetime.now(UTC),
+            value=value,
+            unit="V",
+            sensor_id="sensor-1",
+            device_id=instrument.device_id,
+            measurement_type="voltage",
+        )
 
-    await manager.stop()
+    # Exercise the buffer policy deterministically, without relying on
+    # scheduler timing or arbitrary sleeps.
+    manager._put_buffered(measurement(1.0))
+    manager._put_buffered(measurement(2.0))
+    manager._put_buffered(measurement(3.0))
 
-    assert manager.stats.dropped_measurements > 0
-
+    assert manager.stats.dropped_measurements == 1
     assert manager.buffer.qsize() == 2
+
+    remaining = [
+        manager.buffer.get_nowait().value for _ in range(manager.buffer.qsize())
+    ]
+    assert remaining == [2.0, 3.0]

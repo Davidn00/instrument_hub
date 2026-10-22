@@ -1,7 +1,7 @@
 from datetime import datetime
 
 import numpy as np
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.v1.schemas.storage import (
@@ -69,15 +69,21 @@ async def create_spectrum(
     request: SpectrumCreate,
     session: AsyncSession = Depends(get_db),
 ) -> SpectrumResponse:
-    spectrum = Spectrum(
-        timestamp=request.timestamp,
-        device_id=request.device_id,
-        wavelength=np.asarray(request.wavelength, dtype=float),
-        intensity=np.asarray(request.intensity, dtype=float),
-        wavelength_unit=request.wavelength_unit,
-        intensity_unit=request.intensity_unit,
-        metadata=request.metadata,
-    )
+    try:
+        spectrum = Spectrum(
+            timestamp=request.timestamp,
+            device_id=request.device_id,
+            wavelength=np.asarray(request.wavelength, dtype=float),
+            intensity=np.asarray(request.intensity, dtype=float),
+            wavelength_unit=request.wavelength_unit,
+            intensity_unit=request.intensity_unit,
+            metadata=request.metadata,
+        )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=str(exc),
+        ) from exc
 
     repository = SpectrumRepository(session)
 
