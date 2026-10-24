@@ -22,6 +22,7 @@ import TimeSeriesPage from "./pages/TimeSeriesPage";
 import FFTPage from "./pages/FFTPage";
 import FBGAnalysisPage from "./pages/FBGAnalysisPage";
 import AlertsPage from "./pages/AlertsPage";
+import ExportPage from "./pages/ExportPage";
 
 
 
@@ -87,23 +88,7 @@ function App() {
           }
         />
         <Route path="alerts" element={<AlertsPage />} />
-
-        <Route
-          path="export"
-          element={
-            <ModulePage
-              title="Export"
-              description="Prepare controlled export of instrumentation data and analysis results."
-              icon={Download}
-              stage="Part 33"
-              features={[
-                "Selection of datasets and time ranges.",
-                "Supported export formats.",
-                "Validation and download handling.",
-              ]}
-            />
-          }
-        />
+        <Route path="export" element={<ExportPage />} />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>

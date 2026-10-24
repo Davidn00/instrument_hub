@@ -135,51 +135,39 @@ http://127.0.0.1:8000/docs
 
 ## Running with Docker
 
-Build the Docker image:
+The local Compose stack runs TimescaleDB, the FastAPI backend and the React frontend. Copy the environment template first (PowerShell: `Copy-Item .env.example .env`):
 
 ```bash
-docker compose build
-```
-
-Start the application:
-
-```bash
-docker compose up -d
-```
-
-Check the running containers:
-
-```bash
+cp .env.example .env
+docker compose config --quiet
+docker compose up --build -d
 docker compose ps
 ```
 
-The API will be available at:
+Local URLs:
 
-```text
-http://localhost:8000
-```
+- Dashboard: `http://localhost:8080`
+- API: `http://localhost:8200`
+- Interactive API docs: `http://localhost:8200/docs`
+- API health: `http://localhost:8200/api/v1/health`
+- Frontend container health: `http://localhost:8080/healthz`
 
-Health check:
+The frontend Nginx proxy forwards `/api/*` requests and WebSocket upgrades to FastAPI. PostgreSQL data is stored in the `instrumenthub-db-data` named volume.
 
-```text
-http://localhost:8000/api/v1/health
-```
-
-Interactive API documentation:
-
-```text
-http://localhost:8000/docs
-```
-
-View application logs:
+Optional SMTP testing with Mailpit:
 
 ```bash
-docker compose logs -f api
+docker compose --profile mail up --build -d mailpit
 ```
 
-Stop the application:
+Set `SMTP_HOST=mailpit`, `SMTP_PORT=1025` and `SMTP_STARTTLS=false` in `.env` and recreate the API service. Mailpit captures messages locally; it does not deliver real email. The UI is at `http://localhost:8025`.
+
+Physical serial devices remain attached to the host by default. A Windows `COMx` port is not automatically accessible inside a Linux container; see [DEVICE_PROTOCOL.md](DEVICE_PROTOCOL.md) before attempting USB/WSL pass-through.
+
+View logs and stop the stack:
 
 ```bash
+docker compose logs -f api frontend database
 docker compose down
 ```
 
@@ -857,3 +845,19 @@ production secrets.
 
 See [Stage 9 — Automation, Alerts and Advanced Analysis](docs/stage9.md)
 for the architecture, endpoints, configuration and validation procedure.
+
+## Stage 10 — Reproducibility and Demo
+
+Stage 10 adds the local multi-container topology, frontend/backend CI checks, technical documentation and a repeatable demo runbook. AWS deployment and OIDC publishing are intentionally deferred.
+
+- [Architecture](ARCHITECTURE.md)
+- [API reference](API.md)
+- [Device and IBSEN protocol](DEVICE_PROTOCOL.md)
+- [Signal processing](SIGNAL_PROCESSING.md)
+- [FBG analysis](FBG_ANALYSIS.md)
+- [Local deployment and operations](DEPLOYMENT.md)
+- [Demo runbook, screenshots and video checklist](docs/demo-runbook.md)
+- [Low-cost cloud integration design (not deployed)](docs/cloud-integration.md)
+- [Stage 10 status and validation evidence](docs/stage10.md)
+
+Generate synthetic demo datasets with `uv run python scripts/generate_demo_dataset.py`. Output is written to `data/examples/` in CSV, JSON and Parquet formats. Synthetic data is clearly distinguished from physical IBSEN measurements. Benchmark metrics, screenshots, video links and physical-device results must be populated only after the relevant runs are performed.

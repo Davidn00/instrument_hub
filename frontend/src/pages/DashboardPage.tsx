@@ -1,5 +1,8 @@
 
 import {
+  useQuery,
+} from "@tanstack/react-query";
+import {
   Activity,
   ArrowUpRight,
   Bell,
@@ -17,6 +20,7 @@ import {
 } from "../api/queries";
 
 import type { Measurement } from "../api/types";
+import { apiRequest } from "../api/client";
 
 function formatTimestamp(value: string): string {
   const date = new Date(value);
@@ -69,6 +73,21 @@ function DashboardPage() {
   const experiments = useExperimentsQuery();
   const measurements = useMeasurementsQuery(10);
 
+  const alerts = useQuery({
+    queryKey: ["alerts", { active_only: true }],
+    queryFn: () =>
+      apiRequest<
+        {
+          id: string;
+          acknowledged: boolean;
+          severity: string;
+        }[]
+      >("alerts?active_only=true&limit=1000"),
+    staleTime: 5_000,
+    refetchInterval: 10_000,
+    retry: 1,
+  });
+
   const metrics = [
     {
       label: "Registered devices",
@@ -103,17 +122,22 @@ function DashboardPage() {
     },
     {
       label: "Active alerts",
-      value: "—",
-      description: "Alerts API not implemented",
+      value: alerts.isSuccess ? String(alerts.data.length) : "—",
+      description: alerts.isError
+        ? "Could not load alerts"
+        : alerts.isPending
+          ? "Loading active alerts"
+          : "Active alerts returned by the API",
       icon: Bell,
-      isError: false,
+      isError: alerts.isError,
     },
   ];
 
   const hasQueryError =
     devices.isError ||
     experiments.isError ||
-    measurements.isError;
+    measurements.isError ||
+    alerts.isError;
 
   return (
     <div className="space-y-8">
