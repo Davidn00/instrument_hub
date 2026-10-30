@@ -5,7 +5,7 @@ import {
   //AlertTriangle,
   //BarChart3,
   //Cpu,
-  Download,
+  //Download,
   //FlaskConical,
   //RadioTower,
   //Waves,
@@ -13,7 +13,7 @@ import {
 
 import AppLayout from "./components/AppLayout";
 import DashboardPage from "./pages/DashboardPage";
-import ModulePage from "./pages/ModulePage";
+//import ModulePage from "./pages/ModulePage";
 import DevicesPage from "./pages/DevicesPage";
 import ExperimentsPage from "./pages/ExperimentsPage";
 import SpectrumPage from "./pages/SpectrumPage";
